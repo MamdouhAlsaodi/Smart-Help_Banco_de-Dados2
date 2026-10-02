@@ -1,0 +1,30 @@
+### Health
+GET http://localhost:3000/health
+
+### Buscar chamados
+GET http://localhost:3000/api/busca?q=recuperar%20acesso%20senha&limite=5
+
+### Listar categorias
+GET http://localhost:3000/api/categorias
+
+### Criar chamado
+POST http://localhost:3000/api/chamados
+Content-Type: application/json
+
+{
+  "titulo": "Não consigo acessar minha conta",
+  "descricao": "A senha foi redefinida, mas o portal continua informando credenciais inválidas.",
+  "prioridade": "ALTA",
+  "autorId": 1,
+  "categoriaId": 1,
+  "tags": ["senha", "acesso"]
+}
+
+### Resolver chamado
+PATCH http://localhost:3000/api/chamados/1/resolver
+Content-Type: application/json
+
+{
+  "texto": "A conta foi desbloqueada e uma nova senha temporária foi emitida.",
+  "responsavelId": 2
+}
