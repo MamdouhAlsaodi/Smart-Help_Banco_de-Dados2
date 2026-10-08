@@ -263,8 +263,11 @@ Etapa 4 do PLANO.md — migration inicial do schema Prisma 6.19.3 e teste de int
 **Resultado:**
 Gerada `prisma/migrations/20261008_initial/migration.sql` com o diff canônico do schema (revisado manualmente: enums Status/Prioridade; tabelas Usuario, Categoria, Chamado, Solucao, Tag e _ChamadoToTag com PKs; 1:1 via UNIQUE em Solucao.chamadoId; uniques de email/nome; índices de Chamado, Solucao e da tabela de junção; FKs com RESTRICT/CASCADE e ON UPDATE CASCADE conforme o schema) e `migration_lock.toml` com provider postgresql. Criado `test/migration.test.js` (ESM) que valida integridade do SQL/lock offline e compara o arquivo, trimado, com o diff canônico regenerado na hora usando DATABASE_URL sintética (127.0.0.1:1). Prova RED→GREEN: sem migration.sql, 1 passa / 5 falham; com os arquivos, 6/6 passam. Com `npm ci --ignore-scripts`, `npx prisma validate` aprovou e a suíte completa `node --test` passou 16/16 (incluindo os testes pré-existentes de schema e degraded, que falhavam antes só por node_modules ausente). A migration NÃO foi marcada como aplicada nem executada em PostgreSQL real.
 
+**Verificação posterior de Mamdouh (Hermes Agent, gpt-6-sol):**
+O PR #8 incluiu CI sintético isolado, com revisão independente da proteção de volumes/contêiner/porta e correção do uso da senha gerada antes do push. No run 37853576630 do head `91d06beb7ded5ce4ccacea452a819d0fd77451d2`, a migration inicial foi aplicada duas vezes em bancos vazios efêmeros; passaram as 16 verificações locais, as operações Prisma de criação/leitura com relações, restrições de FK e unicidade, persistência após `down`/`up` e reconstrução após remoção do volume sintético. O log do job confirma a remoção final do volume criado. Isso não equivale à execução no computador dos integrantes.
+
 **Pendências:**
-A migration ainda precisa ser aplicada com `prisma migrate dev/deploy` num PostgreSQL real para validar a execução (e marcar a tabela _prisma_migrations); Full-Text Search (Etapa 8) é migration separada; testes de integração de aplicação permanecem para incrementos futuros.
+Falta reprodução no host local e inspeção pelo pgAdmin na infraestrutura do desenvolvedor; Full-Text Search (Etapa 8) é migration separada; testes de integração com API/seeder e revisão cruzada permanecem para incrementos futuros.
 
 ---
 
