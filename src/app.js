@@ -39,8 +39,8 @@ app.get('/health', async (req, res) => {
     dbStatus = 'desconectado';
   }
 
-  res.status(dbStatus === 'conectado' ? 200 : 200).json({
-    status: 'ok',
+  res.status(dbStatus === 'conectado' ? 200 : 503).json({
+    status: dbStatus === 'conectado' ? 'ok' : 'indisponível',
     timestamp: new Date().toISOString(),
     uptime: process.uptime(),
     banco: dbStatus
@@ -54,14 +54,11 @@ app.use('/api/busca', searchRouter);
 // Rotas auxiliares para categorias e usuários
 app.get('/api/categorias', async (req, res, next) => {
   try {
-    if (prisma.categoria) {
-      const categorias = await prisma.categoria.findMany({
-        orderBy: { nome: 'asc' },
-        include: { _count: { select: { chamados: true } } }
-      });
-      return res.json(categorias);
-    }
-    res.json([]);
+    const categorias = await prisma.categoria.findMany({
+      orderBy: { nome: 'asc' },
+      include: { _count: { select: { chamados: true } } }
+    });
+    res.json(categorias);
   } catch (error) {
     next(error);
   }
@@ -69,14 +66,11 @@ app.get('/api/categorias', async (req, res, next) => {
 
 app.get('/api/usuarios', async (req, res, next) => {
   try {
-    if (prisma.usuario) {
-      const usuarios = await prisma.usuario.findMany({
-        orderBy: { nome: 'asc' },
-        select: { id: true, nome: true, email: true, cargo: true }
-      });
-      return res.json(usuarios);
-    }
-    res.json([]);
+    const usuarios = await prisma.usuario.findMany({
+      orderBy: { nome: 'asc' },
+      select: { id: true, nome: true, email: true, cargo: true }
+    });
+    res.json(usuarios);
   } catch (error) {
     next(error);
   }
@@ -93,18 +87,12 @@ app.use((req, res) => {
 
 // Middleware centralizado de tratamento de erros
 app.use((err, req, res, _next) => {
-  console.error('[Erro na requisição]:', err);
-
-  const status = err.status || 500;
-  const resposta = {
-    erro: err.message || 'Erro interno no servidor'
-  };
-
-  if (process.env.NODE_ENV === 'development' && err.stack) {
-    resposta.stack = err.stack;
-  }
-
-  res.status(status).json(resposta);
+  const status = [400, 404, 409, 503].includes(err.status) ? err.status : 500;
+  console.error('[Erro na requisição]:', status);
+  res.status(status).json({
+    erro: status === 503 ? 'Banco de dados indisponível'
+      : status === 500 ? 'Erro interno no servidor' : err.message
+  });
 });
 
 export default app;

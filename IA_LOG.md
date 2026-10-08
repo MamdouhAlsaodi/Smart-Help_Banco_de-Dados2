@@ -153,19 +153,37 @@ Padronização do `IA_LOG.md` com registros resumidos, identificação do respon
 
 ## 11 — Implementação da base da API Express e rotas do backend
 
-**Responsável:** Eberson Carneiro  
-**Ferramenta:** Antigravity IDE  
-**Modelo:** Gemini 3.8 Flash  
-**Data:** 08/10/2026  
+**Responsável:** Eberson Carneiro
+**Ferramenta:** Antigravity IDE
+**Modelo:** Gemini 3.8 Flash
+**Data:** 08/10/2026
 
-**Prompt:**  
+**Prompt:**
 Implemente a base do backend Node.js (Etapa 5 do PLANO.md) com Express, separação entre servidor e configuração da aplicação, rota de verificação de saúde (/health), estrutura de rotas/serviços de chamados e busca, módulo centralizado para PrismaClient e encerramento gracioso.
 
-**Resultado:**  
+**Resultado:**
 Criação e estruturação de `src/server.js`, `src/app.js`, `src/lib/prisma.js`, `src/routes/chamados.routes.js`, `src/routes/search.routes.js`, `src/services/chamados.service.js`, `src/services/search.service.js` e `.env.example`. Testes do endpoint `/health` e rota informativa raiz executados com sucesso.
 
-**Pendências:**  
+**Pendências:**
 Aguardando definição do `schema.prisma` e contêineres Docker (Etapas 2, 3 e 4) para execução do `npx prisma generate`, migrations e testes com banco conectado.
+
+---
+
+## 12 — Revisão da base e atualização de responsáveis
+
+**Responsável:** Mamdouh Alsaudi (revisão assistida por Hermes Agent)
+**Ferramenta:** Hermes Agent
+**Modelo:** gpt-6-sol
+**Data:** 08/10/2026
+
+**Prompt:**
+Revisar o PR aberto, ler a documentação, corrigir antes da integração e nomear os dois responsáveis no plano.
+
+**Resultado:**
+Foram corrigidos o carregamento da API sem cliente Prisma gerado, as respostas simuladas de sucesso sem banco e a resposta HTTP do health check; adicionados testes HTTP de regressão. Os responsáveis do PLANO.md agora estão identificados pelo nome e pela conta GitHub do autor do PR.
+
+**Pendências:**
+Schema Prisma, migrações e integração real com PostgreSQL continuam dependentes das etapas anteriores do plano; os testes adicionados cobrem apenas o comportamento sem banco.
 
 ---
 
@@ -182,4 +200,3 @@ As próximas atividades deverão seguir o formato:
 **Pendências:** (quando houver)
 
 Registrar somente atividades efetivamente realizadas e resultados confirmados.
-

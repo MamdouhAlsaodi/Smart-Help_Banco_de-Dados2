@@ -1,18 +1,22 @@
-import { PrismaClient } from '@prisma/client';
-
-let prismaInstance = null;
+let prismaInstance;
 
 try {
+  const { PrismaClient } = await import('@prisma/client');
+  if (typeof PrismaClient !== 'function') {
+    throw new Error('PrismaClient não gerado');
+  }
   prismaInstance = new PrismaClient({
     log: process.env.NODE_ENV === 'development' ? ['error', 'warn'] : ['error']
   });
-} catch (error) {
-  console.warn('⚠️ PrismaClient ainda não gerado. Execute "npx prisma generate" após configurar o schema.');
+} catch {
+  console.warn('PrismaClient indisponível. Execute "npx prisma generate" após configurar o schema.');
+  // Mantém a API inicializável, mas nunca inventa resultados sem banco.
   prismaInstance = new Proxy({}, {
     get: (_target, prop) => {
-      if (prop === '$queryRaw') return async () => { throw new Error('PrismaClient pendente de geração'); };
       if (prop === '$disconnect') return async () => {};
-      return undefined;
+      const error = new Error('Banco de dados indisponível');
+      error.status = 503;
+      throw error;
     }
   });
 }

@@ -11,28 +11,21 @@ export const chamadosService = {
     if (prioridade) where.prioridade = prioridade;
     if (categoriaId) where.categoriaId = Number(categoriaId);
 
-    // Se o banco estiver configurado com os modelos Prisma
-    if (prisma.chamado) {
-      return prisma.chamado.findMany({
-        where,
-        take,
-        skip,
-        orderBy: { criadoEm: 'desc' },
-        include: {
-          autor: { select: { id: true, nome: true, email: true } },
-          categoria: true,
-          tags: true,
-          solucao: true
-        }
-      });
-    }
-
-    return [];
+    return prisma.chamado.findMany({
+      where,
+      take,
+      skip,
+      orderBy: { criadoEm: 'desc' },
+      include: {
+        autor: { select: { id: true, nome: true, email: true } },
+        categoria: true,
+        tags: true,
+        solucao: true
+      }
+    });
   },
 
   async buscarPorId(id) {
-    if (!prisma.chamado) return null;
-
     return prisma.chamado.findUnique({
       where: { id },
       include: {
@@ -51,10 +44,6 @@ export const chamadosService = {
       const error = new Error('Campos obrigatórios: titulo, descricao, autorId, categoriaId');
       error.status = 400;
       throw error;
-    }
-
-    if (!prisma.chamado) {
-      return { id: 1, ...dados, criadoEm: new Date() };
     }
 
     return prisma.chamado.create({
@@ -86,10 +75,6 @@ export const chamadosService = {
       const error = new Error('Campos obrigatórios: texto, responsavelId');
       error.status = 400;
       throw error;
-    }
-
-    if (!prisma.chamado) {
-      return { id, status: 'RESOLVIDO', solucao: { texto, responsavelId } };
     }
 
     return prisma.$transaction(async (tx) => {
