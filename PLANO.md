@@ -12,7 +12,7 @@ O trabalho será dividido entre duas pessoas, mas as etapas de integração, rev
 
 ## 2. Divisão geral de responsabilidades
 
-### Integrante 1 — Banco de Dados e Infraestrutura
+### Mamdouh Alsaudi — Banco de Dados e Infraestrutura
 Responsável principal por:
 - preparação do repositório e estrutura inicial;
 - Docker e Docker Compose;
@@ -25,7 +25,7 @@ Responsável principal por:
 - revisão de desempenho das consultas;
 - apoio na documentação técnica do banco.
 
-### Integrante 2 — Backend, API e Dados de Teste
+### Eberson Carneiro (@Mudoviskyy) — Backend, API e Dados de Teste
 Responsável principal por:
 - estrutura do backend Node.js;
 - organização de rotas e serviços;
@@ -59,13 +59,13 @@ Os dois integrantes devem participar de:
 ### Objetivo
 Garantir que os dois integrantes entendam exatamente o que o professor solicitou antes de iniciar o desenvolvimento.
 
-### Integrante 1
+### Mamdouh Alsaudi
 1. Ler o documento de diretrizes completo.
 2. Identificar as tecnologias obrigatórias.
 3. Separar os requisitos relacionados a banco de dados, Docker e modelagem.
 4. Registrar pontos obrigatórios que não podem ser esquecidos.
 
-### Integrante 2
+### Eberson Carneiro (@Mudoviskyy)
 1. Ler o mesmo documento completo.
 2. Identificar o que precisa ser demonstrado pelo backend.
 3. Separar os requisitos de API, seed, documentação e Git.
@@ -91,10 +91,10 @@ Garantir que os dois integrantes entendam exatamente o que o professor solicitou
 
 ## ETAPA 1 — Preparação do repositório e estrutura do projeto
 
-### Responsável principal: Integrante 1
-### Revisão: Integrante 2
+### Responsável principal: Mamdouh Alsaudi
+### Revisão: Eberson Carneiro (@Mudoviskyy)
 
-### Tarefas do Integrante 1
+### Tarefas de Mamdouh Alsaudi
 1. Criar o repositório Git.
 2. Criar a estrutura de diretórios do projeto.
 3. Adicionar `package.json`.
@@ -104,7 +104,7 @@ Garantir que os dois integrantes entendam exatamente o que o professor solicitou
 7. Definir scripts principais no `package.json`.
 8. Fazer o primeiro commit de estrutura.
 
-### Tarefas do Integrante 2
+### Tarefas de Eberson Carneiro (@Mudoviskyy)
 1. Revisar a estrutura criada.
 2. Conferir se não existem arquivos sensíveis no repositório.
 3. Verificar se a organização permite separar rotas, serviços e banco.
@@ -141,10 +141,10 @@ A dupla consegue clonar o repositório e entender onde cada parte do projeto ser
 
 ## ETAPA 2 — Infraestrutura com Docker
 
-### Responsável principal: Integrante 1
-### Revisão: Integrante 2
+### Responsável principal: Mamdouh Alsaudi
+### Revisão: Eberson Carneiro (@Mudoviskyy)
 
-### Tarefas do Integrante 1
+### Tarefas de Mamdouh Alsaudi
 1. Criar o `docker-compose.yml`.
 2. Configurar o contêiner PostgreSQL.
 3. Definir nome do banco, usuário e senha por variáveis de ambiente.
@@ -158,10 +158,10 @@ A dupla consegue clonar o repositório e entender onde cada parte do projeto ser
 11. Confirmar que pgAdmin abre corretamente.
 12. Derrubar e subir os serviços novamente para validar persistência.
 
-### Tarefas do Integrante 2
+### Tarefas de Eberson Carneiro (@Mudoviskyy)
 1. Clonar ou atualizar o projeto em seu ambiente.
 2. Executar o mesmo `docker compose up -d`.
-3. Confirmar que a infraestrutura funciona fora do computador do Integrante 1.
+3. Confirmar que a infraestrutura funciona fora do computador de Mamdouh Alsaudi.
 4. Registrar qualquer ajuste necessário para portabilidade.
 5. Validar se os nomes e portas usados estão claros.
 
@@ -186,7 +186,7 @@ docker compose up -d
 
 ## ETAPA 3 — Modelagem do banco de dados
 
-### Responsável principal: Integrante 1
+### Responsável principal: Mamdouh Alsaudi
 ### Revisão conjunta
 
 ### Entidades principais
@@ -197,7 +197,7 @@ docker compose up -d
 - `Tag`
 - relação entre `Chamado` e `Tag`
 
-### Tarefas do Integrante 1
+### Tarefas de Mamdouh Alsaudi
 1. Definir os campos de cada entidade.
 2. Definir chaves primárias.
 3. Definir chaves estrangeiras.
@@ -211,7 +211,7 @@ docker compose up -d
 11. Criar o DER em `docs/DER.md`.
 12. Comparar DER e Prisma para garantir que ambos representam a mesma estrutura.
 
-### Tarefas do Integrante 2
+### Tarefas de Eberson Carneiro (@Mudoviskyy)
 1. Revisar o modelo pensando no uso da API.
 2. Confirmar se é possível criar um chamado com usuário e categoria.
 3. Confirmar se um chamado pode ter várias tags.
@@ -240,8 +240,8 @@ O schema deve representar todo o MVP sem depender de alterações improvisadas d
 
 ## ETAPA 4 — Prisma e primeira migration
 
-### Responsável principal: Integrante 1
-### Apoio: Integrante 2
+### Responsável principal: Mamdouh Alsaudi
+### Apoio: Eberson Carneiro (@Mudoviskyy)
 
 ### Tarefas
 1. Configurar `DATABASE_URL`.
@@ -274,10 +274,10 @@ O banco inteiro deve poder ser reconstruído usando o histórico de migrations.
 
 ## ETAPA 5 — Base do backend Node.js
 
-### Responsável principal: Integrante 2
-### Revisão: Integrante 1
+### Responsável principal: Eberson Carneiro (@Mudoviskyy)
+### Revisão: Mamdouh Alsaudi
 
-### Tarefas do Integrante 2
+### Tarefas de Eberson Carneiro (@Mudoviskyy)
 1. Criar o servidor Node.js.
 2. Separar inicialização do servidor e configuração da aplicação.
 3. Configurar parsing de JSON.
@@ -289,7 +289,7 @@ O banco inteiro deve poder ser reconstruído usando o histórico de migrations.
 9. Definir tratamento básico de erros.
 10. Garantir encerramento adequado da conexão com Prisma.
 
-### Tarefas do Integrante 1
+### Tarefas de Mamdouh Alsaudi
 1. Revisar uso do Prisma.
 2. Verificar se conexões não são abertas repetidamente.
 3. Confirmar se erros do banco são tratados de forma compreensível.
@@ -306,8 +306,8 @@ O servidor deve iniciar, responder à rota de status e conectar ao PostgreSQL se
 
 ## ETAPA 6 — API de chamados
 
-### Responsável principal: Integrante 2
-### Revisão funcional: Integrante 1
+### Responsável principal: Eberson Carneiro (@Mudoviskyy)
+### Revisão funcional: Mamdouh Alsaudi
 
 ### Funcionalidades mínimas
 1. Criar chamado.
@@ -320,7 +320,7 @@ O servidor deve iniciar, responder à rota de status e conectar ao PostgreSQL se
 8. Exibir tags quando existirem.
 
 ### Para cada endpoint
-O Integrante 2 deverá:
+Eberson Carneiro (@Mudoviskyy) deverá:
 1. definir método HTTP;
 2. definir rota;
 3. definir dados de entrada;
@@ -332,7 +332,7 @@ O Integrante 2 deverá:
 9. retornar resposta JSON clara;
 10. adicionar exemplo em `requests.http`.
 
-### Revisão do Integrante 1
+### Revisão de Mamdouh Alsaudi
 1. Conferir se cada operação respeita relações do banco.
 2. Verificar se não existem queries desnecessárias.
 3. Conferir inclusões/joins realizados pelo Prisma.
@@ -350,13 +350,13 @@ Todas as operações principais de um chamado devem funcionar sem qualquer front
 
 ## ETAPA 7 — Seeder e massa de dados
 
-### Responsável principal: Integrante 2
-### Revisão de banco: Integrante 1
+### Responsável principal: Eberson Carneiro (@Mudoviskyy)
+### Revisão de banco: Mamdouh Alsaudi
 
 ### Objetivo
 Popular o banco com milhares de registros para que a busca e a estrutura possam ser demonstradas em volume maior que alguns exemplos manuais.
 
-### Tarefas do Integrante 2
+### Tarefas de Eberson Carneiro (@Mudoviskyy)
 1. Criar `src/seed.js`.
 2. Gerar usuários fictícios.
 3. Gerar categorias fixas e coerentes.
@@ -370,7 +370,7 @@ Popular o banco com milhares de registros para que a busca e a estrutura possam 
 11. Evitar dados completamente repetidos.
 12. Exibir resumo ao final do seed.
 
-### Tarefas do Integrante 1
+### Tarefas de Mamdouh Alsaudi
 1. Acompanhar tempo de inserção.
 2. Verificar integridade das relações.
 3. Conferir quantidade de registros no PostgreSQL.
@@ -402,13 +402,13 @@ O banco deve possuir volume suficiente para uma demonstração real de recupera�
 
 ## ETAPA 8 — Busca e recuperação de informações
 
-### Responsável principal: Integrante 1
-### Integração na API: Integrante 2
+### Responsável principal: Mamdouh Alsaudi
+### Integração na API: Eberson Carneiro (@Mudoviskyy)
 
 ### Objetivo
 Demonstrar que o sistema consegue recuperar chamados antigos de forma rápida usando texto pesquisado pelo usuário.
 
-### Tarefas do Integrante 1
+### Tarefas de Mamdouh Alsaudi
 1. Definir quais campos participarão da busca.
 2. Preparar Full-Text Search do PostgreSQL.
 3. Criar os índices necessários.
@@ -420,7 +420,7 @@ Demonstrar que o sistema consegue recuperar chamados antigos de forma rápida us
 9. Registrar observações de desempenho.
 10. Garantir que a busca continua funcionando com milhares de registros.
 
-### Tarefas do Integrante 2
+### Tarefas de Eberson Carneiro (@Mudoviskyy)
 1. Criar rota de busca.
 2. Receber o termo pela API.
 3. Rejeitar busca vazia quando necessário.
@@ -449,7 +449,7 @@ Uma consulta deve localizar rapidamente registros relevantes dentro da massa de 
 
 ### Responsabilidade: ambos
 
-### Testes do Integrante 1
+### Testes de Mamdouh Alsaudi
 1. Docker sobe sem falhas.
 2. PostgreSQL fica saudável.
 3. migrations funcionam em banco vazio.
@@ -458,7 +458,7 @@ Uma consulta deve localizar rapidamente registros relevantes dentro da massa de 
 6. consultas de busca funcionam.
 7. dados permanecem após reinício dos contêineres.
 
-### Testes do Integrante 2
+### Testes de Eberson Carneiro (@Mudoviskyy)
 1. servidor inicia corretamente;
 2. healthcheck responde;
 3. criação de chamado funciona;
@@ -470,9 +470,9 @@ Uma consulta deve localizar rapidamente registros relevantes dentro da massa de 
 9. erros comuns retornam respostas compreensíveis.
 
 ### Teste cruzado obrigatório
-O Integrante 1 executa o projeto seguindo somente o README escrito/revisado pelo Integrante 2.
+Mamdouh Alsaudi executa o projeto seguindo somente o README escrito/revisado por Eberson Carneiro (@Mudoviskyy).
 
-Depois, o Integrante 2 executa o projeto em ambiente limpo seguindo somente as instruções aprovadas pela dupla.
+Depois, Eberson Carneiro (@Mudoviskyy) executa o projeto em ambiente limpo seguindo somente as instruções aprovadas pela dupla.
 
 ### Critério de conclusão
 Nenhum integrante deve precisar explicar oralmente uma etapa escondida para que o outro consiga iniciar o projeto.
@@ -483,7 +483,7 @@ Nenhum integrante deve precisar explicar oralmente uma etapa escondida para que 
 
 ### Divisão
 
-#### Integrante 1
+#### Mamdouh Alsaudi
 Responsável principalmente por:
 - seção de Docker;
 - PostgreSQL;
@@ -493,7 +493,7 @@ Responsável principalmente por:
 - Full-Text Search;
 - arquitetura de persistência.
 
-#### Integrante 2
+#### Eberson Carneiro (@Mudoviskyy)
 Responsável principalmente por:
 - instalação Node.js;
 - comandos npm;
@@ -562,7 +562,7 @@ O `IA_LOG.md` deve ser um registro do processo real do projeto, não apenas uma 
 
 O histórico Git deve demonstrar contribuição real dos dois integrantes ao longo do projeto.
 
-### Integrante 1 — possíveis commits
+### Mamdouh Alsaudi — possíveis commits
 - `chore: configura ambiente Docker`
 - `feat: modela banco no Prisma`
 - `feat: cria migration inicial`
@@ -570,7 +570,7 @@ O histórico Git deve demonstrar contribuição real dos dois integrantes ao lon
 - `feat: implementa Full-Text Search`
 - `docs: documenta arquitetura do banco`
 
-### Integrante 2 — possíveis commits
+### Eberson Carneiro (@Mudoviskyy) — possíveis commits
 - `feat: cria estrutura da API`
 - `feat: adiciona rotas de chamados`
 - `feat: implementa servico de chamados`
@@ -589,7 +589,7 @@ O histórico Git deve demonstrar contribuição real dos dois integrantes ao lon
 
 ## ETAPA 13 — Revisão final técnica
 
-### Checklist do Integrante 1
+### Checklist de Mamdouh Alsaudi
 - [ ] PostgreSQL inicia no Docker.
 - [ ] pgAdmin inicia corretamente.
 - [ ] volume está configurado.
@@ -601,7 +601,7 @@ O histórico Git deve demonstrar contribuição real dos dois integrantes ao lon
 - [ ] busca funciona com milhares de registros.
 - [ ] nenhuma senha real está versionada.
 
-### Checklist do Integrante 2
+### Checklist de Eberson Carneiro (@Mudoviskyy)
 - [ ] Node.js inicia a API.
 - [ ] endpoints principais funcionam.
 - [ ] validações mínimas funcionam.
@@ -627,7 +627,7 @@ O histórico Git deve demonstrar contribuição real dos dois integrantes ao lon
 
 ### Responsabilidade: ambos
 
-### Integrante 1 demonstra
+### Mamdouh Alsaudi demonstra
 1. Docker Compose.
 2. PostgreSQL e pgAdmin.
 3. tabelas e relacionamentos.
@@ -635,7 +635,7 @@ O histórico Git deve demonstrar contribuição real dos dois integrantes ao lon
 5. quantidade de dados.
 6. índice e mecanismo de busca.
 
-### Integrante 2 demonstra
+### Eberson Carneiro (@Mudoviskyy) demonstra
 1. inicialização da API.
 2. criação de chamado.
 3. listagem de chamado.
@@ -662,16 +662,16 @@ A ordem abaixo reduz conflitos entre os integrantes e permite trabalho paralelo:
 
 1. **Ambos:** leitura e análise das diretrizes.
 2. **Ambos:** definição do escopo.
-3. **Integrante 1:** Docker e PostgreSQL.
-4. **Integrante 2:** estrutura básica Node.js.
-5. **Integrante 1:** Prisma e modelagem.
-6. **Integrante 2:** preparação das rotas e serviços sem depender de todas as queries finais.
+3. **Mamdouh Alsaudi:** Docker e PostgreSQL.
+4. **Eberson Carneiro (@Mudoviskyy):** estrutura básica Node.js.
+5. **Mamdouh Alsaudi:** Prisma e modelagem.
+6. **Eberson Carneiro (@Mudoviskyy):** preparação das rotas e serviços sem depender de todas as queries finais.
 7. **Ambos:** revisão do schema.
-8. **Integrante 1:** migration e conexão final.
-9. **Integrante 2:** implementação completa dos endpoints.
-10. **Integrante 2:** seeder.
-11. **Integrante 1:** índices e Full-Text Search.
-12. **Integrante 2:** endpoint de busca.
+8. **Mamdouh Alsaudi:** migration e conexão final.
+9. **Eberson Carneiro (@Mudoviskyy):** implementação completa dos endpoints.
+10. **Eberson Carneiro (@Mudoviskyy):** seeder.
+11. **Mamdouh Alsaudi:** índices e Full-Text Search.
+12. **Eberson Carneiro (@Mudoviskyy):** endpoint de busca.
 13. **Ambos:** integração.
 14. **Ambos:** testes cruzados.
 15. **Ambos:** documentação.
@@ -749,7 +749,7 @@ O SmartHelp será considerado pronto somente quando:
 
 # 7. Resumo da divisão final
 
-| Área | Integrante 1 | Integrante 2 |
+| Área | Mamdouh Alsaudi | Eberson Carneiro (@Mudoviskyy) |
 |---|---|---|
 | Análise das diretrizes | Participa | Participa |
 | Planejamento | Participa | Participa |
