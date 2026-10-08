@@ -66,6 +66,15 @@ if [[ "${SMARTHELP_FTS_CHECK:-}" == "1" ]]; then
   node scripts/ci/fts-check.mjs data
 fi
 
+# Smoke HTTP sintético: API real sobre o banco semeado; exige o seed do FTS.
+if [[ "${SMARTHELP_API_CHECK:-}" == "1" ]]; then
+  if [[ "${SMARTHELP_FTS_CHECK:-}" != "1" ]]; then
+    printf 'api smoke requires SMARTHELP_FTS_CHECK=1 (search data must be seeded)\n' >&2
+    exit 1
+  fi
+  node scripts/ci/api-smoke.mjs
+fi
+
 "${compose[@]}" down
 "${compose[@]}" up --detach --wait postgres
 assert_owned_target

@@ -1,0 +1,63 @@
+name: SmartHelp API smoke
+
+on:
+  workflow_dispatch:
+  pull_request:
+    paths:
+      - 'src/app.js'
+      - 'src/routes/**'
+      - 'src/services/**'
+      - 'src/lib/**'
+      - 'prisma/migrations/**'
+      - 'prisma/schema.prisma'
+      - 'scripts/ci/api-smoke.mjs'
+      - 'scripts/ci/fts-check.mjs'
+      - 'scripts/ci/migration-check.mjs'
+      - 'scripts/ci/migration-smoke.sh'
+      - 'test/api-smoke.test.js'
+      - 'docker-compose.yml'
+      - 'package.json'
+      - 'package-lock.json'
+      - '.github/workflows/api-smoke.yml'
+  push:
+    branches: [main]
+    paths:
+      - 'src/app.js'
+      - 'src/routes/**'
+      - 'src/services/**'
+      - 'src/lib/**'
+      - 'prisma/migrations/**'
+      - 'prisma/schema.prisma'
+      - 'scripts/ci/api-smoke.mjs'
+      - 'scripts/ci/fts-check.mjs'
+      - 'scripts/ci/migration-check.mjs'
+      - 'scripts/ci/migration-smoke.sh'
+      - 'test/api-smoke.test.js'
+      - 'docker-compose.yml'
+      - 'package.json'
+      - 'package-lock.json'
+      - '.github/workflows/api-smoke.yml'
+
+permissions:
+  contents: read
+
+jobs:
+  api:
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+          cache: npm
+      - run: npm ci --ignore-scripts --no-audit --no-fund
+      - run: npx prisma generate
+        env:
+          DATABASE_URL: postgresql://synthetic:synthetic@127.0.0.1:1/synthetic?schema=public
+      - run: npm test
+      - name: PostgreSQL isolated migration, FTS seed and synthetic HTTP API smoke
+        env:
+          SMARTHELP_FTS_CHECK: '1'
+          SMARTHELP_API_CHECK: '1'
+        run: bash scripts/ci/migration-smoke.sh
