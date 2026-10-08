@@ -52,6 +52,12 @@ if [[ "$ready" != 1 ]]; then
   status="$(curl --noproxy '*' --silent --max-time 3 --output /dev/null --write-out '%{http_code}' http://127.0.0.1:5050/ || true)"
   printf 'pgAdmin did not answer HTTP on loopback (last status: %s)\n' "$status" >&2
   "${compose[@]}" ps --all >&2
+  "${compose[@]}" logs --no-color --tail 40 pgadmin 2>&1 | python3 -c 'import re,sys
+for line in sys.stdin:
+    if re.search(r"password|token|secret|credential|postgresql://", line, re.I):
+        print("[pgAdmin diagnostic redacted]")
+    else:
+        print(line.rstrip())' >&2
   exit 1
 fi
 
