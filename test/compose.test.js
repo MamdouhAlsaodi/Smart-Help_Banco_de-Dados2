@@ -18,7 +18,7 @@ test('Compose requires local passwords, stays on loopback and preserves data', {
   const vars = {
     POSTGRES_USER: 'smarthelp_user', POSTGRES_DB: 'smarthelp',
     POSTGRES_PASSWORD: 'synthetic-config-check',
-    PGADMIN_DEFAULT_EMAIL: 'admin@smarthelp.local',
+    PGADMIN_DEFAULT_EMAIL: 'admin@smarthelp.dev',
     PGADMIN_DEFAULT_PASSWORD: 'synthetic-config-check'
   };
   const config = compose(['--format', 'json'], vars);

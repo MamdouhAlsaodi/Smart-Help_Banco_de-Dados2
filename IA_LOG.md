@@ -198,7 +198,7 @@ Schema Prisma, migrações e integração real com PostgreSQL continuam dependen
 Preparar nossa parte do projeto em incrementos, manter `IA_LOG.md` atualizado e evitar que o agente apareça como terceiro integrante no GitHub.
 
 **Resultado:**
-Configurada a identidade Git local de Mamdouh para os próximos commits e criada uma `.mailmap` para mapear a autoria assistida do commit 99c219b (sem reescrever o histórico). Adicionados Compose com PostgreSQL/pgAdmin e volumes persistentes, variáveis locais sem senhas versionadas, healthcheck, documentação do estado atual e teste estático da configuração. `npm test` passou com 5 testes neste incremento.
+Configurada a identidade Git local de Mamdouh para os próximos commits e criada uma `.mailmap` para mapear a autoria assistida do commit 99c219b (sem reescrever o histórico). Adicionados Compose com PostgreSQL/pgAdmin e volumes persistentes, variáveis locais sem senhas versionadas, healthcheck, documentação do estado atual e teste estático da configuração. Criado também um smoke test sintético em GitHub Actions para conexão, acesso HTTP ao pgAdmin e persistência após reinício; a execução CI precisa ser verificada separadamente. `npm test` passou com 5 testes locais neste incremento.
 
 **Pendências:**
 A atualização da lista de contribuidores no GitHub após `.mailmap` não é imediata nem garantida; o commit histórico preserva sua autoria original. Sem acesso ao daemon Docker neste ambiente, ainda não foram verificados conexão real, saúde dos contêineres ou persistência; schema Prisma, migrações e Full-Text Search ficam para os próximos incrementos.
