@@ -42,14 +42,16 @@ created=1
 
 ready=0
 for attempt in {1..30}; do
-  if curl --fail --silent --output /dev/null http://127.0.0.1:5050/login; then
+  if curl --noproxy '*' --fail --silent --location --max-time 3 --output /dev/null http://127.0.0.1:5050/; then
     ready=1
     break
   fi
   sleep 2
 done
 if [[ "$ready" != 1 ]]; then
-  printf 'pgAdmin did not answer HTTP /login\n' >&2
+  status="$(curl --noproxy '*' --silent --max-time 3 --output /dev/null --write-out '%{http_code}' http://127.0.0.1:5050/ || true)"
+  printf 'pgAdmin did not answer HTTP on loopback (last status: %s)\n' "$status" >&2
+  "${compose[@]}" ps --all >&2
   exit 1
 fi
 
