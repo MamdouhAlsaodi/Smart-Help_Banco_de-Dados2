@@ -20,6 +20,8 @@ Registrar chamados de suporte com usuários, categorias, prioridades, tags e sol
 **Estado atual:** a API base existe; o Compose já define PostgreSQL e pgAdmin, mas o schema Prisma,
 as migrations, o seeder e a busca integrada ainda serão implementados. Neste ambiente o Compose
 foi validado estaticamente, mas os contêineres não puderam ser iniciados (sem acesso ao daemon).
+O CI isolado executou PostgreSQL e pgAdmin com dados sintéticos, verificou HTTP e preservação
+de um registro após `down`/`up`; isso não substitui o teste cruzado nos computadores da dupla.
 
 ```bash
 cp .env.example .env

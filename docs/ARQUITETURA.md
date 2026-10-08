@@ -12,4 +12,4 @@
 
 ## Estado e limites
 
-A sintaxe do Compose foi validada localmente, mas os contêineres ainda não foram iniciados neste ambiente porque o usuário atual não tem acesso ao daemon Docker. Não há confirmação de conexão, saúde, volume persistente ou reinício. O schema Prisma, as migrações e a busca Full-Text Search pertencem a incrementos posteriores; `docs/DER.md` ainda não representa um modelo implementado.
+A sintaxe do Compose foi validada localmente; os contêineres não foram iniciados neste host porque o usuário atual não tem acesso ao daemon Docker. Um workflow de CI isolado com credenciais sintéticas verificou PostgreSQL saudável, pgAdmin acessível por HTTP e persistência de um registro após `down`/`up` (run 37852346903). Os volumes sintéticos foram removidos ao final. Ainda falta reproduzir no ambiente dos dois integrantes. Schema Prisma, migrations e Full-Text Search pertencem a incrementos posteriores deste ramo; `docs/DER.md` será preenchido na etapa de modelo.
