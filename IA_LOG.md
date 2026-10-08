@@ -187,6 +187,24 @@ Schema Prisma, migrações e integração real com PostgreSQL continuam dependen
 
 ---
 
+## 13 — Infraestrutura PostgreSQL/pgAdmin e atribuição Git
+
+**Responsável:** Mamdouh Alsaudi (implementação assistida por Hermes Agent)
+**Ferramenta:** Hermes Agent
+**Modelo:** gpt-6-sol
+**Data:** 08/10/2026
+
+**Prompt:**
+Preparar nossa parte do projeto em incrementos, manter `IA_LOG.md` atualizado e evitar que o agente apareça como terceiro integrante no GitHub.
+
+**Resultado:**
+Configurada a identidade Git local de Mamdouh para os próximos commits e criada uma `.mailmap` para mapear a autoria assistida do commit 99c219b (sem reescrever o histórico). Adicionados Compose com PostgreSQL/pgAdmin e volumes persistentes, variáveis locais sem senhas versionadas, healthcheck, documentação do estado atual e teste estático da configuração. `npm test` passou com 5 testes neste incremento.
+
+**Pendências:**
+A atualização da lista de contribuidores no GitHub após `.mailmap` não é imediata nem garantida; o commit histórico preserva sua autoria original. Sem acesso ao daemon Docker neste ambiente, ainda não foram verificados conexão real, saúde dos contêineres ou persistência; schema Prisma, migrações e Full-Text Search ficam para os próximos incrementos.
+
+---
+
 ## Próximos registros
 
 As próximas atividades deverão seguir o formato:
