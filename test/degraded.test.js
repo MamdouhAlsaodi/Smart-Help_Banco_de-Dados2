@@ -1,6 +1,9 @@
 import assert from 'node:assert/strict';
 import { after, before, test } from 'node:test';
-import app from '../src/app.js';
+
+// Never contact a developer's configured database, even when .env exists locally.
+process.env.DATABASE_URL = 'postgresql://synthetic:synthetic@127.0.0.1:1/synthetic?schema=public';
+const { default: app } = await import('../src/app.js');
 
 let server;
 let base;

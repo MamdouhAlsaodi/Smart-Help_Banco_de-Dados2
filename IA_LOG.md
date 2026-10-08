@@ -205,6 +205,48 @@ A atualização da lista de contribuidores no GitHub após `.mailmap` não é im
 
 ---
 
+## 14 — Schema Prisma, DER e teste automatizado de validação
+
+**Responsável:** Mamdouh Alsaudi (implementação assistida por Pi)
+**Ferramenta:** Pi
+**Modelo:** zai/glm-5.3-flash
+**Data:** 08/10/2026
+
+**Pedido do usuário/Prompt:**
+Continuar a parte de Mamdouh em pequenos PRs: criar `prisma/schema.prisma` válido para Prisma 6.x e `docs/DER.md` sincronizado, compatíveis com as rotas/serviços existentes, com teste automático que execute `prisma validate` com URL sintética local e comprove campos/relações essenciais após `prisma generate`. TDD (RED/GREEN), sem alterar `src/`, sem migration e sem commit/push.
+
+**Objetivos:**
+Modelar Usuario, Categoria, Chamado, Solucao e Tag conforme o contrato dos serviços (`autor`, `categoria`, `tags`, `solucao`, `responsavel`, FKs, timestamps, enums Status/Prioridade), com ações referenciais coerentes (sem órfãos), índices convencionais e nomes de tabela default compatíveis com o SQL de busca.
+
+**Resultado:**
+Criados `prisma/schema.prisma`, `docs/DER.md` e `test/schema.test.js`. TDD: teste escrito primeiro e confirmado em RED (3 de 5 testes falhavam por schema ausente/vazio); após a implementação, `prisma validate` aceitou o schema com `DATABASE_URL='postgresql://synthetic:synthetic@127.0.0.1:5432/synthetic?schema=public'` (sem conexão a serviço real), `prisma generate` produziu o client sem banco e os 5 testes de schema passaram verificando modelos, campos, relações, enums e compatibilidade de nomes com `src/services/search.service.js`. `git diff --check` sem apontamentos. Nenhuma migration foi gerada e não houve commit/push.
+
+**Pendências:**
+Após `prisma generate`, dois testes pré-existentes de `test/degraded.test.js` passaram a falhar: com o client gerado e banco inacessível, o Prisma lança erro sem `status`, e o middleware de erro de `src/app.js` responde 500 em vez dos 503 esperados. A correção exige ajuste em `src/app.js` ou `src/lib/prisma.js` (mapear PrismaClientInitializationError para 503), fora do escopo deste incremento. Também pendentes: migration (Etapa 4), Full-Text Search (Etapa 8) e integração real com PostgreSQL.
+
+---
+
+## 15 — Revisão de integração do schema com a API
+
+**Responsável:** Mamdouh Alsaudi (revisão assistida por Hermes Agent e Pi)
+**Ferramenta:** Hermes Agent; Pi (revisão estática, sem alterações)
+**Modelo:** gpt-6-sol; zai/glm-5.3-flash
+**Data:** 08/10/2026
+
+**Pedido do usuário/Prompt:**
+Continuar as tarefas de Mamdouh em incrementos pequenos, verificar o trabalho de Pi e registrar no IA_LOG.md o pedido, o modelo e os objetivos de cada etapa.
+
+**Objetivos:**
+Conferir a compatibilidade do schema com todas as rotas atuais e testar a API após gerar o Prisma Client, sem banco real nem dados privados.
+
+**Resultado:**
+A revisão detectou que `/api/usuarios` exige `cargo` e que o modelo inicial continha `senhaHash` apesar de não haver autenticação; `cargo` foi adicionado como opcional e `senhaHash` removido. O teste do client passou a inspecionar o DMMF real. Com o client gerado e banco sintético indisponível, o teste antigo revelou respostas 500 em vez de 503; o middleware agora classifica erros de inicialização/conexão como 503, e o teste usa apenas `127.0.0.1:1` para nunca tocar no banco do desenvolvedor. `prisma validate`, `prisma generate` e 10 testes locais passaram.
+
+**Pendências:**
+Conexão PostgreSQL real, migrations, constraints aplicadas, Full-Text Search e testes de integração dependem dos incrementos seguintes; o teste atual de schema não substitui uma migração aplicada.
+
+---
+
 ## Próximos registros
 
 As próximas atividades deverão seguir o formato:

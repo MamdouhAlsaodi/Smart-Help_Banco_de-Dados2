@@ -1,0 +1,38 @@
+name: SmartHelp Prisma schema
+
+on:
+  pull_request:
+    paths:
+      - 'prisma/schema.prisma'
+      - 'src/app.js'
+      - 'test/schema.test.js'
+      - 'test/degraded.test.js'
+      - '.github/workflows/prisma-schema.yml'
+  push:
+    branches: [main]
+    paths:
+      - 'prisma/schema.prisma'
+      - 'src/app.js'
+      - 'test/schema.test.js'
+      - 'test/degraded.test.js'
+      - '.github/workflows/prisma-schema.yml'
+
+permissions:
+  contents: read
+
+jobs:
+  schema:
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    env:
+      DATABASE_URL: postgresql://synthetic:synthetic@127.0.0.1:1/synthetic?schema=public
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+          cache: npm
+      - run: npm ci --ignore-scripts --no-audit --no-fund
+      - run: npx prisma validate
+      - run: npx prisma generate
+      - run: npm test

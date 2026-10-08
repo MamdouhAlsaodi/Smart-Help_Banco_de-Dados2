@@ -87,7 +87,10 @@ app.use((req, res) => {
 
 // Middleware centralizado de tratamento de erros
 app.use((err, req, res, _next) => {
-  const status = [400, 404, 409, 503].includes(err.status) ? err.status : 500;
+  const databaseUnavailable = err.name === 'PrismaClientInitializationError'
+    || ['P1001', 'P1002', 'P1017'].includes(err.code);
+  const status = databaseUnavailable ? 503
+    : [400, 404, 409, 503].includes(err.status) ? err.status : 500;
   console.error('[Erro na requisição]:', status);
   res.status(status).json({
     erro: status === 503 ? 'Banco de dados indisponível'
