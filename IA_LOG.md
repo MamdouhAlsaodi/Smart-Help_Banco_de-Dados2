@@ -151,6 +151,24 @@ Padronização do `IA_LOG.md` com registros resumidos, identificação do respon
 
 ---
 
+## 11 — Implementação da base da API Express e rotas do backend
+
+**Responsável:** Eberson Carneiro  
+**Ferramenta:** Antigravity IDE  
+**Modelo:** Gemini 3.8 Flash  
+**Data:** 08/10/2026  
+
+**Prompt:**  
+Implemente a base do backend Node.js (Etapa 5 do PLANO.md) com Express, separação entre servidor e configuração da aplicação, rota de verificação de saúde (/health), estrutura de rotas/serviços de chamados e busca, módulo centralizado para PrismaClient e encerramento gracioso.
+
+**Resultado:**  
+Criação e estruturação de `src/server.js`, `src/app.js`, `src/lib/prisma.js`, `src/routes/chamados.routes.js`, `src/routes/search.routes.js`, `src/services/chamados.service.js`, `src/services/search.service.js` e `.env.example`. Testes do endpoint `/health` e rota informativa raiz executados com sucesso.
+
+**Pendências:**  
+Aguardando definição do `schema.prisma` e contêineres Docker (Etapas 2, 3 e 4) para execução do `npx prisma generate`, migrations e testes com banco conectado.
+
+---
+
 ## Próximos registros
 
 As próximas atividades deverão seguir o formato:
@@ -164,3 +182,4 @@ As próximas atividades deverão seguir o formato:
 **Pendências:** (quando houver)
 
 Registrar somente atividades efetivamente realizadas e resultados confirmados.
+
