@@ -1,0 +1,48 @@
+name: SmartHelp migration smoke
+
+on:
+  workflow_dispatch:
+  pull_request:
+    paths:
+      - 'docker-compose.yml'
+      - 'package.json'
+      - 'package-lock.json'
+      - 'prisma/migrations/**'
+      - 'prisma/schema.prisma'
+      - 'scripts/ci/migration-smoke.sh'
+      - 'scripts/ci/migration-check.mjs'
+      - 'test/migration.test.js'
+      - '.github/workflows/migration-smoke.yml'
+  push:
+    branches: [main]
+    paths:
+      - 'docker-compose.yml'
+      - 'package.json'
+      - 'package-lock.json'
+      - 'prisma/migrations/**'
+      - 'prisma/schema.prisma'
+      - 'scripts/ci/migration-smoke.sh'
+      - 'scripts/ci/migration-check.mjs'
+      - 'test/migration.test.js'
+      - '.github/workflows/migration-smoke.yml'
+
+permissions:
+  contents: read
+
+jobs:
+  migration:
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+          cache: npm
+      - run: npm ci --ignore-scripts --no-audit --no-fund
+      - run: npx prisma generate
+        env:
+          DATABASE_URL: postgresql://synthetic:synthetic@127.0.0.1:1/synthetic?schema=public
+      - run: npm test
+      - name: PostgreSQL isolated migration and CRUD smoke
+        run: bash scripts/ci/migration-smoke.sh
