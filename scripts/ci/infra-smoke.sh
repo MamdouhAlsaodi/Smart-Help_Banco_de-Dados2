@@ -27,7 +27,7 @@ import sys
 with open(sys.argv[1], 'w', encoding='utf-8') as handle:
     handle.write('POSTGRES_USER=smarthelp_ci\nPOSTGRES_DB=smarthelp_ci\n')
     handle.write(f'POSTGRES_PASSWORD={secrets.token_urlsafe(32)}\n')
-    handle.write('PGADMIN_DEFAULT_EMAIL=ci@smarthelp.local\n')
+    handle.write('PGADMIN_DEFAULT_EMAIL=ci@smarthelp.dev\n')
     handle.write(f'PGADMIN_DEFAULT_PASSWORD={secrets.token_urlsafe(32)}\n')
 PY
 
