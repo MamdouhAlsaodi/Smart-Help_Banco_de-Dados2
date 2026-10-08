@@ -1,0 +1,54 @@
+name: SmartHelp FTS smoke
+
+on:
+  workflow_dispatch:
+  pull_request:
+    paths:
+      - 'prisma/migrations/**'
+      - 'prisma/schema.prisma'
+      - 'src/services/search.service.js'
+      - 'scripts/ci/fts-check.mjs'
+      - 'scripts/ci/migration-check.mjs'
+      - 'scripts/ci/migration-smoke.sh'
+      - 'test/fts.test.js'
+      - 'docker-compose.yml'
+      - 'package.json'
+      - 'package-lock.json'
+      - '.github/workflows/fts-smoke.yml'
+  push:
+    branches: [main]
+    paths:
+      - 'prisma/migrations/**'
+      - 'prisma/schema.prisma'
+      - 'src/services/search.service.js'
+      - 'scripts/ci/fts-check.mjs'
+      - 'scripts/ci/migration-check.mjs'
+      - 'scripts/ci/migration-smoke.sh'
+      - 'test/fts.test.js'
+      - 'docker-compose.yml'
+      - 'package.json'
+      - 'package-lock.json'
+      - '.github/workflows/fts-smoke.yml'
+
+permissions:
+  contents: read
+
+jobs:
+  fts:
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+          cache: npm
+      - run: npm ci --ignore-scripts --no-audit --no-fund
+      - run: npx prisma generate
+        env:
+          DATABASE_URL: postgresql://synthetic:synthetic@127.0.0.1:1/synthetic?schema=public
+      - run: npm test
+      - name: PostgreSQL isolated migration, FTS data and empty-rebuild smoke
+        env:
+          SMARTHELP_FTS_CHECK: '1'
+        run: bash scripts/ci/migration-smoke.sh
