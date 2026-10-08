@@ -57,6 +57,13 @@ test('expressão do índice GIN equivale ao WHERE da busca existente', () => {
   );
 });
 
+test('CI smoke importa o serviço de busca real a partir do diretório scripts/ci', () => {
+  const script = fs.readFileSync(path.join(ROOT, 'scripts', 'ci', 'fts-check.mjs'), 'utf8');
+  const imported = script.match(/import\s+\{\s*searchService\s*\}\s+from\s+'([^']+)'/);
+  assert.ok(imported, 'serviço real não importado pelo smoke');
+  assert.equal(path.resolve(ROOT, 'scripts', 'ci', imported[1]), SEARCH_SERVICE);
+});
+
 test('a consulta existente continua parametrizada e com limite aplicado', () => {
   const serviceSql = fs.readFileSync(SEARCH_SERVICE, 'utf8');
   assert.match(serviceSql, /plainto_tsquery\('portuguese', \$\{termo\}\)/);

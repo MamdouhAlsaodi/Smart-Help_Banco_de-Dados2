@@ -7,7 +7,7 @@
 //           sem semear dados.
 import assert from 'node:assert/strict';
 import { PrismaClient } from '@prisma/client';
-import { searchService } from '../src/services/search.service.js';
+import { searchService } from '../../src/services/search.service.js';
 
 const mode = process.argv[2];
 if (mode !== 'data' && mode !== 'index') {
