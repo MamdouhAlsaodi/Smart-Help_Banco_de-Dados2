@@ -247,6 +247,30 @@ Conexão PostgreSQL real, migrations, constraints aplicadas, Full-Text Search e 
 
 ---
 
+## 16 — Migration inicial PostgreSQL (offline, Etapa 4)
+
+**Responsável:** Mamdouh Alsaudi (implementação assistida por Pi)
+**Ferramenta:** Pi coding agent; Prisma CLI 6.19.3 (`prisma migrate diff --from-empty --to-schema-datamodel ... --script`, sem DB real)
+**Modelo:** zai/glm-5.3-flash
+**Data:** 08/10/2026
+
+**Pedido do usuário/Prompt:**
+Continuar as tarefas de Mamdouh em lotes pequenos com Pi: produzir a migration inicial determinística do schema atual (prisma/migrations/20261008_initial/migration.sql + migration_lock.toml) via `prisma migrate diff` sem banco real, revisar o SQL (PKs, FKs, enums, 1:1 Solucao, M:N Chamado/Tag, índices, ações de deleção), criar `test/migration.test.js` de verificação offline com prova RED→GREEN, registrar entrada 16 no IA_LOG.md, sem commit/push/Docker.
+
+**Objetivos:**
+Etapa 4 do PLANO.md — migration inicial do schema Prisma 6.19.3 e teste de integridade offline, sem conectar PostgreSQL nem aplicar a migration em ambiente real.
+
+**Resultado:**
+Gerada `prisma/migrations/20261008_initial/migration.sql` com o diff canônico do schema (revisado manualmente: enums Status/Prioridade; tabelas Usuario, Categoria, Chamado, Solucao, Tag e _ChamadoToTag com PKs; 1:1 via UNIQUE em Solucao.chamadoId; uniques de email/nome; índices de Chamado, Solucao e da tabela de junção; FKs com RESTRICT/CASCADE e ON UPDATE CASCADE conforme o schema) e `migration_lock.toml` com provider postgresql. Criado `test/migration.test.js` (ESM) que valida integridade do SQL/lock offline e compara o arquivo, trimado, com o diff canônico regenerado na hora usando DATABASE_URL sintética (127.0.0.1:1). Prova RED→GREEN: sem migration.sql, 1 passa / 5 falham; com os arquivos, 6/6 passam. Com `npm ci --ignore-scripts`, `npx prisma validate` aprovou e a suíte completa `node --test` passou 16/16 (incluindo os testes pré-existentes de schema e degraded, que falhavam antes só por node_modules ausente). A migration NÃO foi marcada como aplicada nem executada em PostgreSQL real.
+
+**Verificação posterior de Mamdouh (Hermes Agent, gpt-6-sol):**
+O PR #8 incluiu CI sintético isolado, com revisão independente da proteção de volumes/contêiner/porta e correção do uso da senha gerada antes do push. No run 37853576630 do head `91d06beb7ded5ce4ccacea452a819d0fd77451d2`, a migration inicial foi aplicada duas vezes em bancos vazios efêmeros; passaram as 16 verificações locais, as operações Prisma de criação/leitura com relações, restrições de FK e unicidade, persistência após `down`/`up` e reconstrução após remoção do volume sintético. O log do job confirma a remoção final do volume criado. Isso não equivale à execução no computador dos integrantes.
+
+**Pendências:**
+Falta reprodução no host local e inspeção pelo pgAdmin na infraestrutura do desenvolvedor; Full-Text Search (Etapa 8) é migration separada; testes de integração com API/seeder e revisão cruzada permanecem para incrementos futuros.
+
+---
+
 ## Próximos registros
 
 As próximas atividades deverão seguir o formato:
