@@ -1,0 +1,37 @@
+name: SmartHelp infrastructure smoke
+
+on:
+  workflow_dispatch:
+  pull_request:
+    paths:
+      - 'docker-compose.yml'
+      - '.env.example'
+      - 'scripts/ci/infra-smoke.sh'
+      - 'test/compose.test.js'
+      - '.github/workflows/infra-smoke.yml'
+  push:
+    branches: [main]
+    paths:
+      - 'docker-compose.yml'
+      - '.env.example'
+      - 'scripts/ci/infra-smoke.sh'
+      - 'test/compose.test.js'
+      - '.github/workflows/infra-smoke.yml'
+
+permissions:
+  contents: read
+
+jobs:
+  infra-smoke:
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+          cache: npm
+      - run: npm ci --ignore-scripts --no-audit --no-fund
+      - run: npm test
+      - name: PostgreSQL and pgAdmin synthetic smoke
+        run: bash scripts/ci/infra-smoke.sh

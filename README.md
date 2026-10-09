@@ -17,32 +17,41 @@ Registrar chamados de suporte com usuários, categorias, prioridades, tags e sol
 
 ## Execução
 
+**Estado atual:** a API base existe; o Compose já define PostgreSQL e pgAdmin, mas o schema Prisma,
+as migrations, o seeder e a busca integrada ainda serão implementados. Neste ambiente o Compose
+foi validado estaticamente, mas os contêineres não puderam ser iniciados (sem acesso ao daemon).
+O CI isolado executou PostgreSQL e pgAdmin com dados sintéticos, verificou HTTP e preservação
+de um registro após `down`/`up`; isso não substitui o teste cruzado nos computadores da dupla.
+
 ```bash
 cp .env.example .env
+# Edite .env: escolha POSTGRES_PASSWORD e PGADMIN_DEFAULT_PASSWORD distintos e preencha
+# DATABASE_URL com o mesmo usuário/senha/banco/porta PostgreSQL do .env.
 docker compose up -d
-npm install
-npx prisma generate
-npx prisma migrate deploy
+docker compose ps
+npm ci
+npm test
+```
+
+PostgreSQL: `127.0.0.1:5432` (porta ajustável em `.env`).
+pgAdmin: `http://127.0.0.1:5050` (porta ajustável em `.env`). Para cadastrar o
+servidor no pgAdmin, use host `postgres`, porta `5432` e as credenciais
+`POSTGRES_*` do `.env`. `docker compose down` encerra preservando os volumes;
+**não** use `down -v` se quiser manter os dados.
+
+### Quando schema e migrations estiverem disponíveis
+
+```bash
+npm run prisma:generate
+npm run db:migrate
 npm run db:seed
 npm start
 ```
 
-API: `http://localhost:3000`  
-pgAdmin: `http://localhost:5050`
+O comando `npm run demo` e os exemplos de API ainda dependem das etapas seguintes.
+Sem banco operacional, `GET /health` responde **503** e não simula registros.
 
-## Teste rápido
-
-```bash
-npm run demo -- "recuperar acesso senha"
-```
-
-Ou:
-
-```bash
-curl "http://localhost:3000/api/busca?q=recuperar%20acesso%20senha&limite=5"
-```
-
-## Rotas principais
+## Rotas previstas (base implementada; integração de dados pendente)
 
 - `GET /health`
 - `GET /api/chamados`
@@ -58,6 +67,6 @@ curl "http://localhost:3000/api/busca?q=recuperar%20acesso%20senha&limite=5"
 - `PLANO.md` — plano de execução.
 - `PROCESSO.md` — resumo do processo: arquivo discutido, análise, planejamento e execução.
 - `IA_LOG.md` — registro do uso da IA como copiloto técnico.
-- `docs/DER.md` — modelo entidade-relacionamento.
-- `docs/ARQUITETURA.md` — visão da arquitetura.
-- `requests.http` — exemplos prontos de chamadas à API.
+- `docs/DER.md` — modelo entidade-relacionamento (pendente).
+- `docs/ARQUITETURA.md` — arquitetura da infraestrutura e limites de validação.
+- `requests.http` — exemplos de chamadas à API (pendentes).
