@@ -61,6 +61,11 @@ npx prisma migrate deploy
 npx prisma migrate status
 node scripts/ci/migration-check.mjs create
 
+# Etapa 8 — FTS: verificação real com seed (~5k) só quando explicitamente pedida.
+if [[ "${SMARTHELP_FTS_CHECK:-}" == "1" ]]; then
+  node scripts/ci/fts-check.mjs data
+fi
+
 "${compose[@]}" down
 "${compose[@]}" up --detach --wait postgres
 assert_owned_target
@@ -72,4 +77,8 @@ node scripts/ci/migration-check.mjs persisted
 assert_owned_target
 npx prisma migrate deploy
 node scripts/ci/migration-check.mjs create
+# Etapa 8 — FTS: índice recriado após rebuild com volume vazio, sem re-semeadura.
+if [[ "${SMARTHELP_FTS_CHECK:-}" == "1" ]]; then
+  node scripts/ci/fts-check.mjs index
+fi
 printf 'synthetic migration, relationships, persistence and empty-state rebuild passed\n'

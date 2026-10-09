@@ -271,6 +271,34 @@ Falta reprodução no host local e inspeção pelo pgAdmin na infraestrutura do 
 
 ---
 
+## 17 — Full-Text Search PostgreSQL (offline, Etapa 8)
+
+**Responsável:**
+Mamdouh Alsaudi (implementação assistida por Pi)
+
+**Ferramenta:**
+Pi coding agent; Prisma CLI 6.19.3 (offline, sem DB real)
+
+**Modelo:**
+zai/glm-5.3-flash
+
+**Data:**
+08/10/2026
+
+**Pedido do usuário/Prompt:**
+Continuar as tarefas de Mamdouh em incrementos pequenos com Pi: implementar a Etapa 8 FTS apenas nos caminhos permitidos, com teste offline RED→GREEN, índice GIN de expressão alinhado à consulta existente de busca, verificação real com ~5.000 chamados sintéticos apenas em CI (PostgreSQL isolado via hook `SMARTHELP_FTS_CHECK=1`), workflow dedicado, entrada 17 no IA_LOG.md, sem commit/push/Docker local.
+
+**Objetivos:**
+Etapa 8 do PLANO.md — Full-Text Search PostgreSQL (português) via migration Prisma com índice GIN de expressão, verificação offline e smoke real delegado ao CI, sem dados reais, segredos nem banco local.
+
+**Resultado:**
+Criada a migration `prisma/migrations/20261008b_full_text_search/migration.sql` com `CREATE INDEX "Chamado_fts_idx" ON "Chamado" USING GIN (to_tsvector('portuguese', coalesce("titulo", '') || ' ' || coalesce("descricao", '')))`, exatamente a expressão do `WHERE` de `src/services/search.service.js` (sem nova coluna no schema; migration inicial intocada). Desvio consciente e documentado: o nome sugerido no pedido (`20261008_full_text_search`) ordena lexicograficamente ANTES de `20261008_initial` no Prisma Migrate, e o índice falharia por tabela inexistente; o sufixo `b` garante aplicação após a migration inicial. Criado `test/fts.test.js` (offline): existência da migration, ordem lexicográfica de aplicação, índice GIN na tabela Chamado, equivalência normalizada (espaços/aspas/alias) entre a expressão do índice e o `WHERE` real extraído do serviço, e consulta existente parametrizada com limite. Prova RED→GREEN: sem a migration, 3/4 testes falham; com ela, 4/4 passam. Criado `scripts/ci/fts-check.mjs` (modos `data` e `index`), restrito por guarda ao banco sintético de CI (127.0.0.1:5432/smarthelp_ci no GitHub Actions): `data` semeia 5.000 chamados sintéticos em lotes de 500 via `createMany` (usuário/categoria reutilizáveis, sem e-mail real), executa a função real `searchService.buscar` parametrizada e valida multi-termo, rank título>descrição (setweight A/B), termo ausente→zero resultados, limite explícito e teto de 50, índice no `pg_catalog` (`indisvalid`/GIN) e `EXPLAIN (ANALYZE, BUFFERS, FORMAT JSON)` com termo seletivo relatando plano, uso do GIN e tempo observado exclusivamente no CI sintético — sem limiares dependentes de máquina nem extrapolação para produção; `index` verifica o índice recriado após rebuild com volume vazio, sem re-semeadura. `scripts/ci/migration-smoke.sh` teve hook mínimo condicional: `fts-check.mjs data` após o primeiro CRUD e `index` após o rebuild final; sem execução de FTS por padrão e guardas/limpeza preservados. Novo workflow `.github/workflows/fts-smoke.yml` (runner GitHub-hosted Node 22, `npm ci`, `prisma generate` com URL sintética 127.0.0.1:1, `npm test`, e `SMARTHELP_FTS_CHECK=1 bash scripts/ci/migration-smoke.sh`), disparo por paths, timeout 15 min. Verificação local executada: `npm ci --ignore-scripts`, `prisma generate` com DATABASE_URL sintética, `node --test test/fts.test.js` (RED 1 passa/3 falham; GREEN 4/4), suíte completa `node --test test/*.test.js` 20/20, `bash -n scripts/ci/migration-smoke.sh`, `node --check scripts/ci/fts-check.mjs`, `git diff --check`. **LOCALMENTE APENAS OS TESTES OFFLINE RODARAM**; PostgreSQL, Docker, a migration aplicada e a semeadura de 5.000 registros NÃO rodaram localmente — só poderão ser confirmados no CI.
+
+**Pendências:**
+Confirmação do smoke real (migration + GIN + seed 5k + EXPLAIN) depende da execução do workflow no CI; não houve commit/push/merge nem signoff de segurança; sem dados reais. O índice de expressão é SQL manual e não aparece no schema Prisma: qualquer migration posterior precisa revisar o diff para preservar esse índice, sem assumir sincronismo automático.
+
+---
+
 ## Próximos registros
 
 As próximas atividades deverão seguir o formato:
