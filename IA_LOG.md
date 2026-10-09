@@ -294,8 +294,32 @@ Etapa 8 do PLANO.md — Full-Text Search PostgreSQL (português) via migration P
 **Resultado:**
 Criada a migration `prisma/migrations/20261008b_full_text_search/migration.sql` com `CREATE INDEX "Chamado_fts_idx" ON "Chamado" USING GIN (to_tsvector('portuguese', coalesce("titulo", '') || ' ' || coalesce("descricao", '')))`, exatamente a expressão do `WHERE` de `src/services/search.service.js` (sem nova coluna no schema; migration inicial intocada). Desvio consciente e documentado: o nome sugerido no pedido (`20261008_full_text_search`) ordena lexicograficamente ANTES de `20261008_initial` no Prisma Migrate, e o índice falharia por tabela inexistente; o sufixo `b` garante aplicação após a migration inicial. Criado `test/fts.test.js` (offline): existência da migration, ordem lexicográfica de aplicação, índice GIN na tabela Chamado, equivalência normalizada (espaços/aspas/alias) entre a expressão do índice e o `WHERE` real extraído do serviço, e consulta existente parametrizada com limite. Prova RED→GREEN: sem a migration, 3/4 testes falham; com ela, 4/4 passam. Criado `scripts/ci/fts-check.mjs` (modos `data` e `index`), restrito por guarda ao banco sintético de CI (127.0.0.1:5432/smarthelp_ci no GitHub Actions): `data` semeia 5.000 chamados sintéticos em lotes de 500 via `createMany` (usuário/categoria reutilizáveis, sem e-mail real), executa a função real `searchService.buscar` parametrizada e valida multi-termo, rank título>descrição (setweight A/B), termo ausente→zero resultados, limite explícito e teto de 50, índice no `pg_catalog` (`indisvalid`/GIN) e `EXPLAIN (ANALYZE, BUFFERS, FORMAT JSON)` com termo seletivo relatando plano, uso do GIN e tempo observado exclusivamente no CI sintético — sem limiares dependentes de máquina nem extrapolação para produção; `index` verifica o índice recriado após rebuild com volume vazio, sem re-semeadura. `scripts/ci/migration-smoke.sh` teve hook mínimo condicional: `fts-check.mjs data` após o primeiro CRUD e `index` após o rebuild final; sem execução de FTS por padrão e guardas/limpeza preservados. Novo workflow `.github/workflows/fts-smoke.yml` (runner GitHub-hosted Node 22, `npm ci`, `prisma generate` com URL sintética 127.0.0.1:1, `npm test`, e `SMARTHELP_FTS_CHECK=1 bash scripts/ci/migration-smoke.sh`), disparo por paths, timeout 15 min. Verificação local executada: `npm ci --ignore-scripts`, `prisma generate` com DATABASE_URL sintética, `node --test test/fts.test.js` (RED 1 passa/3 falham; GREEN 4/4), suíte completa `node --test test/*.test.js` 20/20, `bash -n scripts/ci/migration-smoke.sh`, `node --check scripts/ci/fts-check.mjs`, `git diff --check`. **LOCALMENTE APENAS OS TESTES OFFLINE RODARAM**; PostgreSQL, Docker, a migration aplicada e a semeadura de 5.000 registros NÃO rodaram localmente — só poderão ser confirmados no CI.
 
+**Verificação posterior de Mamdouh (Hermes Agent, gpt-6-sol):**
+O primeiro CI do PR #9 (run 37854829334) falhou porque `fts-check.mjs` importava o serviço com caminho relativo errado; a falha ficou coberta por novo teste RED→GREEN e o caminho foi corrigido. No head `1b86424080dae25ce78a1297438a98de65158bd5`, o run 37855027555 passou com 21/21 testes, aplicação das duas migrations, 5.000 chamados sintéticos, título com rank maior que descrição, busca multi-termo, limites, índice GIN usado pelo plano (Bitmap Index Scan; 0,756 ms observados **somente** no CI), índice recriado no banco vazio e remoção final do volume efêmero. Uma revisão Pi de leitura não encontrou bloqueios estáticos adicionais; o resultado do CI é a prova de execução, não o relato da revisão.
+
 **Pendências:**
-Confirmação do smoke real (migration + GIN + seed 5k + EXPLAIN) depende da execução do workflow no CI; não houve commit/push/merge nem signoff de segurança; sem dados reais. O índice de expressão é SQL manual e não aparece no schema Prisma: qualquer migration posterior precisa revisar o diff para preservar esse índice, sem assumir sincronismo automático.
+O serviço/índice foram verificados com dados sintéticos no CI, mas faltam seeder do projeto, integração da rota HTTP com banco populado, inspeção pgAdmin e teste cruzado nos computadores dos dois integrantes. O índice SQL não está representado no schema Prisma; migrations futuras precisam preservar essa expressão após revisão do diff. PR aberto, sem merge ou aceite final.
+
+---
+
+## 18 — Documentação técnica e limites do handoff
+
+**Responsável:** Mamdouh Alsaudi (edição assistida por Hermes Agent)
+**Ferramenta:** Hermes Agent; revisão de integração Pi em leitura
+**Modelo:** gpt-6-sol; zai/glm-5.3-flash (revisão)
+**Data:** 08/10/2026
+
+**Pedido do usuário/Prompt:**
+Concluir em pequenos incrementos o trabalho atribuído a Mamdouh, revisar com Pi, registrar pedido/modelo/objetivos e informar somente quando a parte inteira estiver realmente completa.
+
+**Objetivos:**
+Atualizar README, PROCESSO e arquitetura para descrever o estado executável do banco e os limites demonstrados pelos PRs #6–#9, sem declarar prontas as tarefas de Eberson ou os testes cruzados ainda ausentes.
+
+**Resultado:**
+Documentadas a sequência local de configuração, `prisma generate`, `migrate deploy`, API, acesso ao pgAdmin, índice GIN, evidências de CI sintético e cautela com `down -v`. Removidas instruções que tratavam schema/migrations como inexistentes e apresentavam seeder/demo vazios como comandos prontos. A revisão de integração de leitura identificou lacunas de API/seeder atribuídas a Eberson e pendências conjuntas; nenhuma correção do backend dele é afirmada neste registro.
+
+**Pendências:**
+Reprodução Docker/pgAdmin nos computadores da dupla, seeder de milhares de registros do projeto, integração HTTP ponta a ponta, revisão conjunta, teste cruzado em ambiente limpo e demonstração. Este incremento é documentação, não prova de que o projeto inteiro terminou.
 
 ---
 
