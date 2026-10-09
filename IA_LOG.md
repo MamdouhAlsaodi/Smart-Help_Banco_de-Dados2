@@ -323,6 +323,27 @@ Reprodução Docker/pgAdmin nos computadores da dupla, seeder de milhares de reg
 
 ---
 
+## 19 — Smoke HTTP sintético de integração da API (offline, CI)
+
+**Responsável:** Mamdouh Alsaudi (implementação assistida por agente Pi)
+**Ferramenta:** Pi (coding agent)
+**Modelo:** zai/glm-5.3-flash
+**Data:** 08/10/2026
+
+**Pedido do usuário/Prompt:**
+Implementar somente o smoke HTTP sintético de integração da API Express real sobre o PostgreSQL sintético do CI (script `scripts/ci/api-smoke.mjs`, gancho guardado em `migration-smoke.sh`, workflow dedicado e teste offline TDD), sem Docker/commit/push local e reportando falhas da API sem escondê-las.
+
+**Objetivos:**
+Verificar por HTTP a app real (`src/app.js`) contra o banco sintético semeado pelo FTS check: `/health` 200, listagens, POST de chamado com tag, GET por ID, PATCH resolver com responsável sintético, `/api/busca?q=impressora%20rede&limite=5` sobre dados FTS reais, q vazio → 400 e ID inexistente → 404, com persistência confirmada via Prisma.
+
+**Resultado:**
+Criados `scripts/ci/api-smoke.mjs` (guardas `GITHUB_ACTIONS`/`RUNNER_ENVIRONMENT=github-hosted` e `DATABASE_URL` restrito a 127.0.0.1:5432/smarthelp_ci schema public; servidor efêmero em 127.0.0.1 fechado em `finally`; sem asserções de tempo), gancho em `scripts/ci/migration-smoke.sh` que roda o smoke só com `SMARTHELP_API_CHECK=1` e exige `SMARTHELP_FTS_CHECK=1`, após o seed de 5k e antes do `down`/rebuild, e workflow `.github/workflows/api-smoke.yml` (ubuntu-latest, Node 22, `npm ci`, `prisma generate` com URL sintética, `npm test`, migração + FTS + API). TDD offline RED→GREEN em `test/api-smoke.test.js`: 6/6 falhas antes da implementação e 6/6 aprovados depois. Localmente rodaram somente verificações offline (`node --check`, `bash -n`, suíte `node --test`); o smoke com PostgreSQL e a execução da API precisam de CI.
+
+**Pendências:**
+Execução do smoke HTTP com banco real apenas via CI (workflow dedicado); verificação do seeder real de milhares de registros (tarefa de Eberson) e teste cruzado nas máquinas da dupla continuam pendentes. Nenhuma prova de execução local em Docker é afirmada neste registro.
+
+---
+
 ## Próximos registros
 
 As próximas atividades deverão seguir o formato:
