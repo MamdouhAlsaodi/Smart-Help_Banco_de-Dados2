@@ -1,0 +1,91 @@
+// SmartHelp — schema Prisma (Etapa 3: modelagem relacional)
+// Prisma 6.x · PostgreSQL · sem renomeação de tabelas: nomes default "Usuario",
+// "Categoria", "Chamado", "Solucao", "Tag" (compatível com src/services/search.service.js).
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+enum Status {
+  ABERTO
+  EM_ATENDIMENTO
+  RESOLVIDO
+}
+
+enum Prioridade {
+  BAIXA
+  MEDIA
+  ALTA
+}
+
+model Usuario {
+  id           Int      @id @default(autoincrement())
+  nome         String
+  email        String   @unique
+  cargo        String?
+  criadoEm     DateTime @default(now())
+  atualizadoEm DateTime @updatedAt
+
+  chamados Chamado[] @relation("ChamadoAutor")
+  solucoes Solucao[]
+}
+
+model Categoria {
+  id           Int      @id @default(autoincrement())
+  nome         String   @unique
+  descricao    String?
+  criadoEm     DateTime @default(now())
+  atualizadoEm DateTime @updatedAt
+
+  chamados Chamado[]
+}
+
+model Chamado {
+  id           Int        @id @default(autoincrement())
+  titulo       String
+  descricao    String
+  status       Status     @default(ABERTO)
+  prioridade   Prioridade @default(MEDIA)
+  autorId      Int
+  categoriaId  Int
+  criadoEm     DateTime   @default(now())
+  atualizadoEm DateTime   @updatedAt
+
+  autor     Usuario   @relation("ChamadoAutor", fields: [autorId], references: [id], onDelete: Restrict, onUpdate: Cascade)
+  categoria Categoria @relation(fields: [categoriaId], references: [id], onDelete: Restrict, onUpdate: Cascade)
+  tags      Tag[]
+  solucao   Solucao?
+
+  @@index([autorId])
+  @@index([categoriaId])
+  @@index([status])
+  @@index([criadoEm])
+}
+
+model Solucao {
+  id            Int      @id @default(autoincrement())
+  texto         String
+  chamadoId     Int      @unique
+  responsavelId Int
+  criadoEm      DateTime @default(now())
+  atualizadoEm  DateTime @updatedAt
+
+  chamado     Chamado @relation(fields: [chamadoId], references: [id], onDelete: Cascade, onUpdate: Cascade)
+  responsavel Usuario @relation(fields: [responsavelId], references: [id], onDelete: Restrict, onUpdate: Cascade)
+
+  @@index([responsavelId])
+}
+
+model Tag {
+  id           Int      @id @default(autoincrement())
+  nome         String   @unique
+  criadoEm     DateTime @default(now())
+  atualizadoEm DateTime @updatedAt
+
+  chamados Chamado[]
+}
