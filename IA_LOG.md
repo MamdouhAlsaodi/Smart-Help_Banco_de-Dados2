@@ -342,6 +342,26 @@ Criados `scripts/ci/api-smoke.mjs` (guardas `GITHUB_ACTIONS`/`RUNNER_ENVIRONMENT
 **Pendências:**
 Execução do smoke HTTP com banco real apenas via CI (workflow dedicado); verificação do seeder real de milhares de registros (tarefa de Eberson) e teste cruzado nas máquinas da dupla continuam pendentes. Nenhuma prova de execução local em Docker é afirmada neste registro.
 
+## 20 — Seeder de massa de dados, script de demonstração e compatibilidade cross-platform
+
+**Responsável:** Eberson Carneiro (@Mudoviskyy)  
+**Ferramenta:** Antigravity IDE  
+**Modelo:** Gemini 3.8 Flash  
+**Data:** 13/10/2026  
+
+**Prompt:**  
+Implementar o seeder de massa de dados do projeto (`src/seed.js`), gerando 5.000 chamados fictícios em lotes com Faker, categorias, tags, soluções e status variados (Etapa 7 do PLANO.md); criar o script CLI de demonstração de busca textual (`src/demo.js`); adicionar testes unitários para os scripts (`test/seed.test.js`) e corrigir compatibilidade cross-platform (Windows / LF/CRLF / `shell: true`) na suíte de testes existente.
+
+**Resultado:**  
+- `src/seed.js`: implementado com inserção em lotes de 500 registros via `createManyAndReturn` e inserção relacional em `_ChamadoToTag` e `Solucao`. Popula 40 usuários fictícios com Faker, 8 categorias de helpdesk, 20 tags corporativas e 5.000 chamados com distribuição de status, datas e soluções.
+- `src/demo.js`: script CLI implementado com medição de latência em milissegundos e formatação visual dos resultados da busca Full-Text Search.
+- `test/seed.test.js`: testes unitários adicionados para validar a declaração da meta de 5.000 chamados, uso do Faker e serviço de busca no demo.
+- Compatibilidade multiplataforma: corrigido tratamento de quebras de linha (CRLF vs LF) e invocação de comandos no Windows (`shell: true` e normalização de caminhos com espaços) em `test/schema.test.js` e `test/migration.test.js`.
+- Suíte `npm test`: 27/27 verificações aprovadas com êxito.
+
+**Pendências:**  
+Execução do `npm run db:seed` com o banco PostgreSQL ativo na infraestrutura Docker e teste cruzado da demonstração (Etapa 9).
+
 ---
 
 ## Próximos registros
@@ -357,3 +377,4 @@ As próximas atividades deverão seguir o formato:
 **Pendências:** (quando houver)
 
 Registrar somente atividades efetivamente realizadas e resultados confirmados.
+

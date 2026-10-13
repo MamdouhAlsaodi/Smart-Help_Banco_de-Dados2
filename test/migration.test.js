@@ -64,9 +64,10 @@ test('FKs e ações de deleção conforme o schema', () => {
 
 test('SQL é equivalente ao diff canônico do schema (offline)', () => {
   const canonical = execFileSync(
-    path.join(ROOT, 'node_modules', '.bin', 'prisma'),
-    ['migrate', 'diff', '--from-empty', '--to-schema-datamodel', SCHEMA, '--script'],
-    { cwd: ROOT, encoding: 'utf8', env: { ...process.env, DATABASE_URL: 'postgresql://synthetic:synthetic@127.0.0.1:1/synthetic?schema=public' } },
+    'npx',
+    ['prisma', 'migrate', 'diff', '--from-empty', '--to-schema-datamodel', 'prisma/schema.prisma', '--script'],
+    { shell: true, cwd: ROOT, encoding: 'utf8', env: { ...process.env, DATABASE_URL: 'postgresql://synthetic:synthetic@127.0.0.1:1/synthetic?schema=public' } },
   );
-  assert.equal(sql().trim(), canonical.trim(), 'migration.sql diverge do diff canônico');
+  const normalize = (t) => t.replace(/\r\n/g, '\n').trim();
+  assert.equal(normalize(sql()), normalize(canonical), 'migration.sql diverge do diff canônico');
 });
