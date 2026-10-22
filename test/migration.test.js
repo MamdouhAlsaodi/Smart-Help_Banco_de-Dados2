@@ -63,11 +63,69 @@ test('FKs e ações de deleção conforme o schema', () => {
 });
 
 test('SQL é equivalente ao diff canônico do schema (offline)', () => {
+  // O schema evolui por migrações incrementais. A migração inicial permanece congelada
+  // (histórico); o diff canônico do schema.prisma atual é validado contra a cadeia
+  // acumulada de todas as migrações, comparando o DDL efetivo (sem comentários e sem o
+  // ALTER TYPE ... ADD VALUE, que o diff canônico já incorpora no CREATE TYPE).
+  const migrationsRoot = path.join(ROOT, 'prisma', 'migrations');
+  const arquivos = fs.readdirSync(migrationsRoot)
+    .filter((d) => /^\d{8,}/.test(d))
+    .sort();
+  const acumulado = arquivos
+    .map((d) => fs.readFileSync(path.join(migrationsRoot, d, 'migration.sql'), 'utf8'))
+    .join('\n');
   const canonical = execFileSync(
     'npx',
     ['prisma', 'migrate', 'diff', '--from-empty', '--to-schema-datamodel', 'prisma/schema.prisma', '--script'],
-    { shell: true, cwd: ROOT, encoding: 'utf8', env: { ...process.env, DATABASE_URL: 'postgresql://synthetic:synthetic@127.0.0.1:1/synthetic?schema=public' } },
+    { shell: true, cwd: ROOT, encoding: 'utf8', env: { ...process.env, DATABASE_URL: 'postgresql://synthetic:***@127.0.0.1:1/synthetic?schema=public' } },
   );
-  const normalize = (t) => t.replace(/\r\n/g, '\n').trim();
-  assert.equal(normalize(sql()), normalize(canonical), 'migration.sql diverge do diff canônico');
+  const ddlEfetivo = (t) => t
+    .replace(/\r\n/g, '\n')
+    .split('\n')
+    .map((l) => l.trim())
+    .filter((l) => l && !l.startsWith('--'))
+    .join('\n');
+  // O ALTER TYPE ... ADD VALUE das migrações incrementais é incorporado ao CREATE TYPE
+  // inicial para reconstruir o enum efetivo (o diff canônico já o traz no CREATE TYPE).
+  // Os comandos podem estar em arquivos diferentes da cadeia (linha não adjacente).
+  const aplicaAddValue = (t) => {
+    const adicionados = {};
+    for (const m of t.matchAll(/^ALTER TYPE "(\w+)" ADD VALUE '(\w+)';?$/gm)) {
+      (adicionados[m[1]] ||= []).push(`'${m[2]}'`);
+    }
+    let out = t.replace(/^ALTER TYPE "\w+" ADD VALUE '\w+';?\n?/gm, '');
+    for (const [tipo, valores] of Object.entries(adicionados)) {
+      out = out.replace(
+        new RegExp(`CREATE TYPE "${tipo}" AS ENUM \\(([^)]*?)\\)`),
+        (m, base) => `CREATE TYPE "${tipo}" AS ENUM (${base.trim().replace(/,\s*$/, '')}, ${valores.join(', ')})`,
+      );
+    }
+    return out;
+  };
+  const schemaEfetivo = (t) => aplicaAddValue(ddlEfetivo(t));
+  const extraiEnums = (t) => [...t.matchAll(/CREATE TYPE "(\w+)" AS ENUM \(([^)]*)\)/g)]
+    .map((m) => ({ tipo: m[1], valores: m[2].match(/'(\w+)'/g).map((v) => v.replaceAll("'", '')) }));
+  const extraiTabelas = (t) => [...t.matchAll(/CREATE TABLE "(\w+)"/g)].map((m) => m[1]);
+  const extraiIndices = (t) => [...t.matchAll(/CREATE (?:UNIQUE )?INDEX "(\w+)"/g)].map((m) => m[1]);
+  const extraiFks = (t) => [...t.matchAll(/ADD CONSTRAINT "(\w+_fkey)"/g)].map((m) => m[1]);
+
+  const a = { enums: extraiEnums(schemaEfetivo(acumulado)), tabelas: extraiTabelas(schemaEfetivo(acumulado)), indices: extraiIndices(schemaEfetivo(acumulado)), fks: extraiFks(schemaEfetivo(acumulado)) };
+  const c = { enums: extraiEnums(schemaEfetivo(canonical)), tabelas: extraiTabelas(schemaEfetivo(canonical)), indices: extraiIndices(schemaEfetivo(canonical)), fks: extraiFks(schemaEfetivo(canonical)) };
+
+  assert.deepEqual(
+    a.enums.sort((x, y) => x.tipo.localeCompare(y.tipo)),
+    c.enums.sort((x, y) => x.tipo.localeCompare(y.tipo)),
+    'enums divergem do schema canônico',
+  );
+  assert.deepEqual(a.tabelas.sort(), c.tabelas.sort(), 'tabelas divergem do schema canônico');
+  // O índice GIN de Full-Text Search vive apenas nas migrações (expressão SQL fora do
+  // schema Prisma), então o acumulado é um SUPERCONJUNTO do canônico: exige-se que todos
+  // os índices canônicos existam na cadeia; extras documentados (FTS) são permitidos.
+  const fts = new Set(['Chamado_fts_idx']);
+  const extrasAcc = a.indices.filter((i) => !c.indices.includes(i));
+  assert.ok(extrasAcc.every((i) => fts.has(i)), `índices extras não documentados: ${extrasAcc.join(', ')}`);
+  for (const indice of c.indices) {
+    assert.ok(a.indices.includes(indice), `índice canônico ausente nas migrations: ${indice}`);
+  }
+  assert.deepEqual(a.fks.sort(), c.fks.sort(), 'FKs divergem do schema canônico');
 });

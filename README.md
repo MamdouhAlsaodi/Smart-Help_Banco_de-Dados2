@@ -47,12 +47,13 @@ curl --get 'http://127.0.0.1:3000/api/busca' --data-urlencode 'q=senha esquecida
 
 Sem banco operacional, `GET /health` responde **503** e não simula registros. Se o Docker local não estiver acessível, o procedimento acima não está validado neste computador; não trate o CI como substituto do teste cruzado.
 
-## Rotas atuais (a integração HTTP com banco populado ainda requer validação)
+## Rotas atuais (integração HTTP validada com banco populado: seed 5.000 + CRUD + busca FTS)
 
 - `GET /health`
-- `GET /api/chamados`
+- `GET /api/chamados` — filtros opcionais: `status`, `prioridade`, `categoriaId`, `autorId`, `tag`; paginação `pagina`/`limite` (máx. 100); ordenação `ordenarPor` (`criadoEm`, `atualizadoEm`, `titulo`, `prioridade`, `status`) e `ordem` (`asc`/`desc`)
 - `GET /api/chamados/:id`
 - `POST /api/chamados`
+- `PUT /api/chamados/:id` — edição de `titulo`, `descricao`, `prioridade`, `categoriaId` e `status` (`ABERTO`, `EM_ATENDIMENTO`, `RESOLVIDO`, `FECHADO`); chamado resolvido só aceita transição para `FECHADO`
 - `PATCH /api/chamados/:id/resolver`
 - `GET /api/busca?q=...`
 - `GET /api/categorias`

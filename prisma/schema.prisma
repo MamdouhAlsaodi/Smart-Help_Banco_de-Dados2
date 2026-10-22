@@ -15,6 +15,7 @@ enum Status {
   ABERTO
   EM_ATENDIMENTO
   RESOLVIDO
+  FECHADO
 }
 
 enum Prioridade {

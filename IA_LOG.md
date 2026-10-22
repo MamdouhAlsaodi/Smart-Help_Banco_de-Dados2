@@ -364,6 +364,22 @@ Execução do `npm run db:seed` com o banco PostgreSQL ativo na infraestrutura D
 
 ---
 
+## 21 — Atualização de chamados (PUT), filtros/ordenação na listagem e status FECHADO
+
+**Responsável:** Mamdouh Alsaudi (com apoio de agente de IA)
+**Ferramenta:** Hermes Agent (execução local) + Pi não utilizado neste lote (mudanças pequenas e circunscritas, executadas diretamente com TDD)
+**Modelo:** GLM-5.3 (Z.AI)
+**Data:** 2026-10-22
+**Prompt:** "Rode o repositório após o merge do PR #12 e complete as lacunas remanescentes do PLANO.md (Etapa 6: edição/fechamento de chamado; filtros e ordenação da listagem; documentação)."
+**Resultado:**
+- `PUT /api/chamados/:id` implementado (título, descrição, prioridade, categoria, status) com regra: chamado resolvido só transiciona para FECHADO (409 caso contrário).
+- Enum `Status` ampliado com `FECHADO` via migration `20261022001032_add_status_fechado` (aplicada e verificada no PostgreSQL: `enum_range` contém os 4 valores).
+- `GET /api/chamados` aceita agora `autorId`, `tag`, `ordenarPor` e `ordem` além dos filtros existentes, com whitelist de campos de ordenação.
+- Teste canônico de migrations atualizado para comparar a cadeia acumulada (CREATE TYPE + ALTER TYPE ADD VALUE + índice GIN FTS) contra o diff do schema atual.
+- README (seção Rotas) e `requests.http` atualizados com as novas rotas, filtros e exemplos.
+- Suíte completa: 33/33 aprovadas; validação HTTP viva com banco populado (5.000 chamados): criar (#5001) → resolver (RESOLVIDO + solução) → busca FTS (~5 ms, índice GIN).
+**Pendências:** nenhuma para este lote.
+
 ## Próximos registros
 
 As próximas atividades deverão seguir o formato:
