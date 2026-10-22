@@ -30,8 +30,19 @@ chamadosRouter.get('/:id', async (req, res, next) => {
 // Criar novo chamado
 chamadosRouter.post('/', async (req, res, next) => {
   try {
-    const novoChamado = await chamadosService.criar(req.body);
-    res.status(201).json(novoChamado);
+    const chamado = await chamadosService.criar(req.body);
+    res.status(201).json(chamado);
+  } catch (error) {
+    next(error);
+  }
+});
+
+// Atualizar campos de um chamado (título, descrição, prioridade, categoria, status)
+chamadosRouter.put('/:id', async (req, res, next) => {
+  try {
+    const id = Number(req.params.id);
+    const chamado = await chamadosService.atualizar(id, req.body);
+    res.json(chamado);
   } catch (error) {
     next(error);
   }

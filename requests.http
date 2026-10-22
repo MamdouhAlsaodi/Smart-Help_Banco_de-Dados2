@@ -28,3 +28,23 @@ Content-Type: application/json
   "texto": "A conta foi desbloqueada e uma nova senha temporária foi emitida.",
   "responsavelId": 2
 }
+
+### Atualizar chamado (edição de campos)
+PUT http://localhost:3000/api/chamados/1
+Content-Type: application/json
+
+{
+  "prioridade": "ALTA",
+  "descricao": "Descrição atualizada após diagnóstico inicial."
+}
+
+### Fechar chamado resolvido
+PUT http://localhost:3000/api/chamados/1
+Content-Type: application/json
+
+{
+  "status": "FECHADO"
+}
+
+### Listar com filtros, paginação e ordenação
+GET http://localhost:3000/api/chamados?status=ABERTO&prioridade=ALTA&tag=rede&pagina=1&limite=10&ordenarPor=criadoEm&ordem=desc
