@@ -380,6 +380,18 @@ Execução do `npm run db:seed` com o banco PostgreSQL ativo na infraestrutura D
 - Suíte completa: 33/33 aprovadas; validação HTTP viva com banco populado (5.000 chamados): criar (#5001) → resolver (RESOLVIDO + solução) → busca FTS (~5 ms, índice GIN).
 **Pendências:** nenhuma para este lote.
 
+## 22 — Notas de desempenho FTS e roteiro de demonstração (Etapas 8, 13–14)
+
+**Responsável:** Mamdouh Alsaudi (com apoio de agente de IA)
+**Ferramenta:** Hermes Agent (execução local); medições EXPLAIN direto no psql do container
+**Modelo:** GLM-5.3 (Z.AI)
+**Data:** 2026-10-22
+**Prompt:** "Complete as entregas restantes do PLANO.md para a entrega: evidências de desempenho da busca (Etapa 8) e roteiro da demonstração (Etapas 13–14)."
+**Resultado:**
+- `docs/DESEMPENHO-FTS.md`: plano EXPLAIN (ANALYZE, BUFFERS) real sobre 5.000 chamados — Bitmap Index Scan no GIN (0,078 ms para 500 candidatos), ~13,7 ms a frio com ranking, ~4–5 ms quente pela API; tabela de termos e passos de reprodução.
+- `docs/DEMONSTRACAO.md`: roteiro de ~8 min (infra → modelo/migrações → seed → CRUD com regra de fechamento → FTS ao vivo → testes/CI), com seção de perguntas prováveis.
+**Pendências:** nenhuma.
+
 ## Próximos registros
 
 As próximas atividades deverão seguir o formato:
