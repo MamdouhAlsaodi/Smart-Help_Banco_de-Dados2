@@ -64,6 +64,8 @@ Sem banco operacional, `GET /health` responde **503** e não simula registros. S
 - `PLANO.md` — plano de execução.
 - `PROCESSO.md` — resumo do processo: arquivo discutido, análise, planejamento e execução.
 - `IA_LOG.md` — registro do uso da IA como copiloto técnico.
-- `docs/DER.md` — modelo entidade-relacionamento implementado no Prisma (revisão cruzada pendente).
+- `docs/DER.md` — modelo entidade-relacionamento implementado no Prisma.
 - `docs/ARQUITETURA.md` — persistência, migrations, Full-Text Search e limites de validação.
-- `requests.http` — exemplos de chamadas da API (ainda pendentes).
+- `docs/DESEMPENHO-FTS.md` — medidas `EXPLAIN (ANALYZE, BUFFERS)` da busca sobre 5.000 chamados (Etapa 8).
+- `docs/DEMONSTRACAO.md` — roteiro da apresentação final (~8 min, Etapas 13–14).
+- `requests.http` — exemplos de chamadas da API (CRUD completo, filtros e busca).
