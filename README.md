@@ -53,7 +53,7 @@ Sem banco operacional, `GET /health` responde **503** e não simula registros. S
 - `GET /api/chamados` — filtros opcionais: `status`, `prioridade`, `categoriaId`, `autorId`, `tag`; paginação `pagina`/`limite` (máx. 100); ordenação `ordenarPor` (`criadoEm`, `atualizadoEm`, `titulo`, `prioridade`, `status`) e `ordem` (`asc`/`desc`)
 - `GET /api/chamados/:id`
 - `POST /api/chamados`
-- `PUT /api/chamados/:id` — edição de `titulo`, `descricao`, `prioridade`, `categoriaId` e `status` (`ABERTO`, `EM_ATENDIMENTO`, `RESOLVIDO`, `FECHADO`); chamado resolvido só aceita transição para `FECHADO`
+- `PUT /api/chamados/:id` — edição de `titulo`, `descricao`, `prioridade`, `categoriaId` e `status` (`ABERTO`, `EM_ATENDIMENTO`, `RESOLVIDO`, `FECHADO`); a reabertura preserva a solução já registrada
 - `PATCH /api/chamados/:id/resolver`
 - `GET /api/busca?q=...`
 - `GET /api/categorias`
@@ -61,7 +61,7 @@ Sem banco operacional, `GET /health` responde **503** e não simula registros. S
 
 ## Painel e demonstração de integração
 
-Com a API e um banco com dados sintéticos em execução, acesse `/painel/`. A página `/painel/integracao.html` simula um sistema externo: cada clique envia `POST /api/chamados` e cria um chamado real no banco configurado. Ela requer pelo menos um usuário e uma categoria cadastrados; usa o primeiro de cada lista. A consulta de estatísticas agrega registros no servidor, adequada à demonstração, sem ser otimizada para bases grandes.
+Com a API e um banco com dados sintéticos em execução, acesse `/painel/`. O painel permite alterar a prioridade e o status, registrar solução e reabrir chamados preservando a solução existente. Ele mantém uma solução por chamado, sem histórico de versões. A página `/painel/integracao.html` simula um sistema externo: cada clique envia `POST /api/chamados` e cria um chamado real no banco configurado. Ela requer pelo menos um usuário e uma categoria cadastrados; usa o primeiro de cada lista. A consulta de estatísticas agrega registros no servidor, adequada à demonstração, sem ser otimizada para bases grandes.
 
 O painel é um protótipo acadêmico, sem autenticação nem autorização de aplicação. Não o exponha publicamente nem utilize dados sensíveis. Para criar chamados, o usuário de banco da API precisa da permissão de inserção apropriada; o aplicativo não cria privilégios de banco automaticamente. Uma integração real precisa implementar a chamada à API, autenticação, controle de acesso, validação e tratamento de falhas.
 

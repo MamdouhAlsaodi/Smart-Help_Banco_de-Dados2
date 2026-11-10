@@ -22,8 +22,7 @@ Duração alvo: ~8 minutos. Preparar antes: `docker compose up -d postgres`,
 - `GET /api/chamados?status=ABERTO&prioridade=ALTA&limite=5` — filtros + paginação + ordenação.
 - `POST /api/chamados` — abrir chamado ao vivo (mostrar validação 400 sem campos).
 - `PUT /api/chamados/:id` — editar prioridade; depois `{"status":"FECHADO"}`.
-- Regra de negócio: tentar reabrir um chamado resolvido → **409** (imutabilidade pós-resolução,
-  exceto fechamento).
+- Reabrir um chamado resolvido: a solução registrada permanece vinculada. Ao concluir novamente pelo painel, a solução anterior é preservada.
 - `PATCH /api/chamados/:id/resolver` — registrar solução com responsável.
 
 ## 5. Full-Text Search (2 min) — destaque

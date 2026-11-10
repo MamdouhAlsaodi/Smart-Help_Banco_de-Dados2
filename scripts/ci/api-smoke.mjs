@@ -110,7 +110,20 @@ try {
   const posResolver = await api(`/api/chamados/${chamadoId}`);
   assert.equal(posResolver.body.status, 'RESOLVIDO');
   assert.equal(posResolver.body.solucao?.responsavelId, responsavel.id);
-  console.log(`[api-smoke] ciclo POST/GET/PATCH do chamado ${chamadoId} OK, persistido como RESOLVIDO`);
+  // Reabertura e novo encerramento preservam a solução previamente registrada.
+  for (const estado of ['ABERTO', 'FECHADO', 'RESOLVIDO']) {
+    const mudanca = await api(`/api/chamados/${chamadoId}`, {
+      method: 'PUT', headers: { 'content-type': 'application/json' },
+      body: JSON.stringify({ status: estado }),
+    });
+    assert.equal(mudanca.status, 200, `transição para ${estado} falhou`);
+    assert.equal(mudanca.body.status, estado);
+    assert.equal(mudanca.body.solucao?.texto, 'Solução sintética do smoke HTTP');
+  }
+  const ciclo = await prisma.chamado.findUnique({ where: { id: chamadoId }, include: { solucao: true } });
+  assert.equal(ciclo.status, 'RESOLVIDO');
+  assert.equal(ciclo.solucao?.texto, 'Solução sintética do smoke HTTP');
+  console.log(`[api-smoke] ciclo de reabertura e conclusão do chamado ${chamadoId} preservou a solução`);
 
   // ---------- GET /api/busca com dados sintéticos reais do FTS ----------
   const busca = await api('/api/busca?q=impressora%20rede&limite=5');
