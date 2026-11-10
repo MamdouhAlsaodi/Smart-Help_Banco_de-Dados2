@@ -108,11 +108,7 @@ export const chamadosService = {
       error.status = 404;
       throw error;
     }
-    if (existente.solucao && permitidos.status && permitidos.status !== 'FECHADO') {
-      const error = new Error('Chamado resolvido só pode ser fechado; não é reaberto nem editado para outro status');
-      error.status = 409;
-      throw error;
-    }
+    // Reabertura preserva a solução vinculada; nenhum dado anterior é removido.
 
     return prisma.chamado.update({
       where: { id },
