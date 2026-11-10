@@ -1,0 +1,18 @@
+/* Compact, persistent in-page navigation. */
+.layout { display: block; }
+.sidebar { position: sticky; top: 0; z-index: 30; height: auto; min-height: 70px; padding: 10px clamp(16px, 3vw, 40px); display: flex; flex-direction: row; align-items: center; gap: 28px; box-shadow: 0 6px 24px #1123391a; }
+.sidebar .brand { flex: none; }
+.sidebar nav { display: flex; align-items: center; gap: 4px; flex: 1; min-width: 0; overflow-x: auto; scrollbar-width: thin; }
+.sidebar .nav-link { white-space: nowrap; padding: 10px 12px; gap: 8px; }
+.sidebar .nav-link.active { box-shadow: inset 0 -3px #6c98ff; }
+.sidebar .top-status { flex: none; color: #c3d2e5; font-size: 12px; }
+[id="visao"], [id="chamados"], [id="busca"], [id="categorias"] { scroll-margin-top: 88px; }
+.nav-link:focus-visible, .brand:focus-visible { outline: 2px solid #a7c2ff; outline-offset: 2px; }
+@media (max-width: 850px) {
+  .sidebar { flex-wrap: wrap; gap: 6px 16px; padding: 8px 16px; }
+  .sidebar .brand { margin: 0 auto 0 0; }
+  .sidebar nav { order: 3; width: 100%; flex: 0 0 100%; overflow-x: auto; scrollbar-width: thin; }
+  .sidebar .nav-link { flex: none; }
+  [id="visao"], [id="chamados"], [id="busca"], [id="categorias"] { scroll-margin-top: 112px; }
+}
+@media (prefers-reduced-motion: reduce) { html { scroll-behavior: auto; } }

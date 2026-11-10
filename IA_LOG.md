@@ -392,6 +392,15 @@ Execução do `npm run db:seed` com o banco PostgreSQL ativo na infraestrutura D
 - `docs/DEMONSTRACAO.md`: roteiro de ~8 min (infra → modelo/migrações → seed → CRUD com regra de fechamento → FTS ao vivo → testes/CI), com seção de perguntas prováveis.
 **Pendências:** nenhuma.
 
+## 23 — Painel e demonstração de integração
+
+**Responsável:** Mamdouh Alsaudi (com apoio de IA)
+**Ferramenta:** Hermes Agent
+**Modelo:** GPT-6.1 Terra
+**Prompt:** Criar um painel visual com dados da base e uma página para demonstrar a criação de chamados pela API.
+**Resultado:** Painel responsivo com indicadores, gráficos, filtro e busca; página de integração simulada que envia um chamado à API. Foram utilizados dados sintéticos.
+**Pendências:** Autenticação e autorização não implementadas; o protótipo não deve ser exposto publicamente.
+
 ## Próximos registros
 
 As próximas atividades deverão seguir o formato:

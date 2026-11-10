@@ -2,12 +2,24 @@ import express from 'express';
 import { chamadosRouter } from './routes/chamados.routes.js';
 import { searchRouter } from './routes/search.routes.js';
 import prisma from './lib/prisma.js';
+import { summarizeTickets } from './services/analytics.service.js';
+import { fileURLToPath } from 'node:url';
 
 export const app = express();
 
 // Middlewares essenciais
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
+
+// Painel de apresentação e agregados reais; as rotas de API permanecem intactas.
+const publicDir = fileURLToPath(new URL('../public/', import.meta.url));
+app.use('/painel', express.static(publicDir));
+app.get('/api/estatisticas', async (_req, res, next) => {
+  try {
+    const rows = await prisma.chamado.findMany({ select: { status: true, prioridade: true, criadoEm: true } });
+    res.json(summarizeTickets(rows));
+  } catch (error) { next(error); }
+});
 
 // Rota raiz informativa
 app.get('/', (req, res) => {
